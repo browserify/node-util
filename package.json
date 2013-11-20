@@ -10,10 +10,10 @@
     "util"
   ],
   "version": "0.4.9",
-  "homepage": "http://nodejs.org/docs/v0.4.9/api/util.html",
+  "homepage": "https://github.com/defunctzombie/node-util",
   "repository": {
     "type": "git",
-    "url": "git://github.com/coolaj86/nodejs-libs-4-browser.git"
+    "url": "git://github.com/defunctzombie/node-util"
   },
   "main": "./util.js",
   "dependencies": {
