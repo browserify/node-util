@@ -1,0 +1,22 @@
+{
+  "author": {
+    "name": "Joyent",
+    "url": "http://www.joyent.com"
+  },
+  "name": "util",
+  "description": "Node.JS util module",
+  "keywords": [
+    "ender",
+    "util"
+  ],
+  "version": "0.4.9",
+  "homepage": "http://nodejs.org/docs/v0.4.9/api/util.html",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/coolaj86/nodejs-libs-4-browser.git"
+  },
+  "main": "./util.js",
+  "dependencies": {
+    "events.node": ">= 0.4.0"
+  }
+}
