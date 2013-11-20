@@ -15,5 +15,14 @@
     "type": "git",
     "url": "git://github.com/defunctzombie/node-util"
   },
-  "main": "./util.js"
+  "main": "./util.js",
+  "scripts": {
+    "test": "node test/node/*.js && zuul test/*.js"
+  },
+  "devDependencies": {
+    "zuul": "~1.0.3"
+  },
+  "browser": {
+    "./support/isBuffer.js": "./support/isBufferBrowser.js"
+  }
 }
