@@ -17,7 +17,7 @@
   },
   "main": "./util.js",
   "scripts": {
-    "test": "node test/node/*.js && zuul test/*.js"
+    "test": "node test/node/*.js"
   },
   "devDependencies": {
     "zuul": "~1.0.3"
