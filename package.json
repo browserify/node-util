@@ -15,8 +15,5 @@
     "type": "git",
     "url": "git://github.com/defunctzombie/node-util"
   },
-  "main": "./util.js",
-  "dependencies": {
-    "events.node": ">= 0.4.0"
-  }
+  "main": "./util.js"
 }
