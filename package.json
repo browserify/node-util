@@ -6,7 +6,6 @@
   "name": "util",
   "description": "Node.JS util module",
   "keywords": [
-    "ender",
     "util"
   ],
   "version": "0.4.9",
