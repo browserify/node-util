@@ -9,3 +9,7 @@ node.js [util](http://nodejs.org/api/util.html) module as a module
 ```shell
 npm install util
 ```
+
+## browser support
+
+This module also works in modern browsers. If you need legacy browser support you will need to polyfill ES5 features.
