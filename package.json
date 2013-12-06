@@ -18,6 +18,9 @@
   "scripts": {
     "test": "node test/node/*.js"
   },
+  "dependencies": {
+    "inherits": "2.0.1"
+  },
   "devDependencies": {
     "zuul": "~1.0.3"
   },
