@@ -16,13 +16,13 @@
   },
   "main": "./util.js",
   "scripts": {
-    "test": "node test/node/*.js"
+    "test": "node test/node/*.js && zuul test/browser/*.js"
   },
   "dependencies": {
     "inherits": "2.0.1"
   },
   "devDependencies": {
-    "zuul": "~1.0.3"
+    "zuul": "~1.0.9"
   },
   "browser": {
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
