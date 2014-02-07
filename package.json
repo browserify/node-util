@@ -21,6 +21,7 @@
   "dependencies": {
     "inherits": "2.0.1"
   },
+  "license": "MIT",
   "devDependencies": {
     "zuul": "~1.0.9"
   },
