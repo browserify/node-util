@@ -31,5 +31,12 @@
   },
   "browser": {
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
+  },
+  "jspm": {
+    "map": {
+      "./util.js": {
+        "node": "@node/util"
+      }
+    }
   }
 }
