@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "zuul": "~1.0.9"
+    "zuul": "^3.0.0"
   },
   "browser": {
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
