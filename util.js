@@ -58,6 +58,8 @@ exports.format = function(f) {
   return str;
 };
 
+// Promisify, added in Node.js v7.x
+exports.promisify = require('pify')
 
 // Mark that a method should not be used.
 // Returns a modified function which warns once by default.
