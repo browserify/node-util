@@ -649,3 +649,7 @@ exports.promisify = function promisify(original) {
 }
 
 exports.promisify.custom = kCustomPromisifiedSymbol
+
+// WHATWG TextEncoder / TextDecoder
+exports.TextEncoder = typeof TextEncoder !== 'undefined' ? TextEncoder : undefined
+exports.TextDecoder = typeof TextDecoder !== 'undefined' ? TextDecoder : undefined
