@@ -67,11 +67,13 @@ assert.equal(util.format('%%%s%%%%', 'hi'), '%hi%%');
 })();
 
 // Errors
-assert.equal(util.format(new Error('foo')), '[Error: foo]');
+var foo = new Error('foo');
+assert.equal(util.format(foo), foo.stack);
 function CustomError(msg) {
   Error.call(this);
   Object.defineProperty(this, 'message', { value: msg, enumerable: false });
   Object.defineProperty(this, 'name', { value: 'CustomError', enumerable: false });
 }
 util.inherits(CustomError, Error);
-assert.equal(util.format(new CustomError('bar')), '[CustomError: bar]');
+var custom = new CustomError('bar');
+assert.equal(util.format(custom), '[CustomError: bar]');
