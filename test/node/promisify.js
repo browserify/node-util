@@ -1,8 +1,12 @@
-'use strict';
 var assert = require('assert');
 var fs = require('fs');
 var vm = require('vm');
 var promisify = require('../../util').promisify;
+
+if (typeof Promise === 'undefined') {
+  console.log('no global Promise found, skipping promisify tests');
+  return;
+}
 
 var mustCalls = [];
 var common = {
@@ -52,10 +56,10 @@ var stat = promisify(fs.stat);
 }
 
 {
-  function fn() {}
-  fn[promisify.custom] = 42;
+  function fn2() {}
+  fn2[promisify.custom] = 42;
   common.expectsError(
-    function () { promisify(fn); },
+    function () { promisify(fn2); },
     { code: 'ERR_INVALID_ARG_TYPE', type: TypeError }
   );
 }
@@ -66,76 +70,76 @@ if (false) {
   var firstValue = 5;
   var secondValue = 17;
 
-  function fn(callback) {
+  function fn3(callback) {
     callback(null, firstValue, secondValue);
   }
 
-  fn[customPromisifyArgs] = ['first', 'second'];
+  fn3[customPromisifyArgs] = ['first', 'second'];
 
-  promisify(fn)().then(common.mustCall(function (obj) {
+  promisify(fn3)().then(common.mustCall(function (obj) {
     assert.deepStrictEqual(obj, { first: firstValue, second: secondValue });
   }));
 }
 
 {
-  var fn = vm.runInNewContext('(function() {})');
-  assert.notStrictEqual(Object.getPrototypeOf(promisify(fn)),
+  var fn4 = vm.runInNewContext('(function() {})');
+  assert.notStrictEqual(Object.getPrototypeOf(promisify(fn4)),
                         Function.prototype);
 }
 
 {
-  function fn(callback) {
+  function fn5(callback) {
     callback(null, 'foo', 'bar');
   }
-  promisify(fn)().then(common.mustCall(function (value) {
+  promisify(fn5)().then(common.mustCall(function (value) {
     assert.deepStrictEqual(value, 'foo');
   }));
 }
 
 {
-  function fn(callback) {
+  function fn6(callback) {
     callback(null);
   }
-  promisify(fn)().then(common.mustCall(function (value) {
+  promisify(fn6)().then(common.mustCall(function (value) {
     assert.strictEqual(value, undefined);
   }));
 }
 
 {
-  function fn(callback) {
+  function fn7(callback) {
     callback();
   }
-  promisify(fn)().then(common.mustCall(function (value) {
+  promisify(fn7)().then(common.mustCall(function (value) {
     assert.strictEqual(value, undefined);
   }));
 }
 
 {
-  function fn(err, val, callback) {
+  function fn8(err, val, callback) {
     callback(err, val);
   }
-  promisify(fn)(null, 42).then(common.mustCall(function (value) {
+  promisify(fn8)(null, 42).then(common.mustCall(function (value) {
     assert.strictEqual(value, 42);
   }));
 }
 
 {
-  function fn(err, val, callback) {
+  function fn9(err, val, callback) {
     callback(err, val);
   }
-  promisify(fn)(new Error('oops'), null).catch(common.mustCall(function (err) {
+  promisify(fn9)(new Error('oops'), null).catch(common.mustCall(function (err) {
     assert.strictEqual(err.message, 'oops');
   }));
 }
 
 {
-  function fn(err, val, callback) {
+  function fn9(err, val, callback) {
     callback(err, val);
   }
 
 
   Promise.resolve()
-    .then(function () { promisify(fn)(null, 42); })
+    .then(function () { return promisify(fn9)(null, 42); })
     .then(function (value) {
       assert.strictEqual(value, 42);
     });
@@ -143,12 +147,12 @@ if (false) {
 
 {
   var o = {};
-  var fn = promisify(function(cb) {
+  var fn10 = promisify(function(cb) {
 
     cb(null, this === o);
   });
 
-  o.fn = fn;
+  o.fn = fn10;
 
   o.fn().then(common.mustCall(function(val) {
     assert(val);
@@ -159,13 +163,13 @@ if (false) {
   var err = new Error('Should not have called the callback with the error.');
   var stack = err.stack;
 
-  var fn = promisify(function(cb) {
+  var fn11 = promisify(function(cb) {
     cb(null);
     cb(err);
   });
 
   Promise.resolve()
-    .then(function () { return fn(); })
+    .then(function () { return fn11(); })
     .then(function () { return Promise.resolve(); })
     .then(function () {
       assert.strictEqual(stack, err.stack);

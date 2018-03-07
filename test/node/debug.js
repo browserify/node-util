@@ -59,8 +59,9 @@ function test(environ, shouldWrite, section) {
   var expectOut = 'ok\n';
 
   var spawn = require('child_process').spawn;
+  process.env.NODE_DEBUG = environ;
   var child = spawn(process.execPath, [__filename, 'child', section], {
-    env: Object.assign(process.env, { NODE_DEBUG: environ })
+    env: process.env
   });
 
   if (shouldWrite) {
