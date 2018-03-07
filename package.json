@@ -20,14 +20,16 @@
     "support"
   ],
   "scripts": {
-    "test": "node test/node/*.js && zuul test/browser/*.js"
+    "test": "node test/node/index.js",
+    "test:browsers": "zuul test/browser/*.js"
   },
   "dependencies": {
     "inherits": "2.0.1"
   },
   "license": "MIT",
   "devDependencies": {
-    "zuul": "~1.0.9"
+    "tape": "^4.9.0",
+    "zuul": "^1.0.10"
   },
   "browser": {
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
