@@ -23,7 +23,7 @@
     "test": "node test/node/*.js && zuul test/browser/*.js"
   },
   "dependencies": {
-    "inherits": "2.0.1"
+    "inherits": "2.0.3"
   },
   "license": "MIT",
   "devDependencies": {
