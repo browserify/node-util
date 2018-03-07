@@ -19,6 +19,94 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+var internalUtil = require('./internal/util');
+var removeColors = internalUtil.removeColors;
+var getConstructorOf = internalUtil.getConstructorOf;
+var isTypedArray = require('is-typed-array');
+
+var propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+var regExpToString = RegExp.prototype.toString;
+var dateToISOString = Date.prototype.toISOString;
+var errorToString = Error.prototype.toString;
+
+var strEscapeSequencesRegExp = /[\x00-\x1f\x27\x5c]/;
+var strEscapeSequencesReplacer = /[\x00-\x1f\x27\x5c]/g;
+var keyStrRegExp = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+var numberRegExp = /^(0|[1-9][0-9]*)$/;
+
+function isSet(obj) {
+  return objectToString(obj) === '[object Set]';
+}
+function isMap(obj) {
+  return objectToString(obj) === '[object Map]';
+}
+function isSetIterator(obj) {
+  return objectToString(obj) === '[object Set Iterator]';
+}
+function isMapIterator(obj) {
+  return objectToString(obj) === '[object Map Iterator]';
+}
+function isAnyArrayBuffer(obj) {
+  return objectToString(obj) === '[object ArrayBuffer]' ||
+    objectToString(obj) ===  '[object SharedArrayBuffer]';
+}
+function isDataView(obj) {
+  return objectToString(obj) === '[object DataView]';
+}
+function isPromise(obj) {
+  return objectToString(obj) === '[object Promise]';
+}
+
+// Escaped special characters. Use empty strings to fill up unused entries.
+var meta = [
+  '\\u0000', '\\u0001', '\\u0002', '\\u0003', '\\u0004',
+  '\\u0005', '\\u0006', '\\u0007', '\\b', '\\t',
+  '\\n', '\\u000b', '\\f', '\\r', '\\u000e',
+  '\\u000f', '\\u0010', '\\u0011', '\\u0012', '\\u0013',
+  '\\u0014', '\\u0015', '\\u0016', '\\u0017', '\\u0018',
+  '\\u0019', '\\u001a', '\\u001b', '\\u001c', '\\u001d',
+  '\\u001e', '\\u001f', '', '', '',
+  '', '', '', '', "\\'", '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '', '', '',
+  '', '', '', '', '', '', '', '\\\\'
+];
+
+function escapeFn (str) {
+  return meta[str.charCodeAt(0)];
+}
+
+// Escape control characters, single quotes and the backslash.
+// This is similar to JSON stringify escaping.
+function strEscape(str) {
+  // Some magic numbers that worked out fine while benchmarking with v8 6.0
+  if (str.length < 5000 && !strEscapeSequencesRegExp.test(str))
+    return '\'' + str + '\'';
+  if (str.length > 100)
+    return '\'' + str.replace(strEscapeSequencesReplacer, escapeFn) + '\'';
+  var result = '';
+  var last = 0;
+  for (var i = 0; i < str.length; i++) {
+    var point = str.charCodeAt(i);
+    if (point === 39 || point === 92 || point < 32) {
+      if (last === i) {
+        result += meta[point];
+      } else {
+        result += str.slice(last, i) + meta[point];
+      }
+      last = i + 1;
+    }
+  }
+  if (last === 0) {
+    result = str;
+  } else if (last !== i) {
+    result += str.slice(last);
+  }
+  return '\'' + result + '\'';
+}
+
 var formatRegExp = /%[sdj%]/g;
 exports.format = function(f) {
   if (!isString(f)) {
@@ -120,6 +208,7 @@ exports.debuglog = function(set) {
   return debugs[set];
 };
 
+var customInspectSymbol = typeof Symbol !== 'undefined' ? Symbol('util.inspect.custom') : undefined;
 
 /**
  * Echos the value of a value. Trys to print the value out
@@ -132,6 +221,8 @@ exports.debuglog = function(set) {
 function inspect(obj, opts) {
   // default options
   var ctx = {
+    maxArrayLength: 100,
+    breakLength: 60,
     seen: [],
     stylize: stylizeNoColor
   };
@@ -154,7 +245,7 @@ function inspect(obj, opts) {
   return formatValue(ctx, obj, ctx.depth);
 }
 exports.inspect = inspect;
-
+inspect.custom = customInspectSymbol;
 
 // http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
 inspect.colors = {
@@ -214,242 +305,462 @@ function arrayToHash(array) {
   return hash;
 }
 
+function formatValue(ctx, value, recurseTimes, ln) {
+  // Primitive types cannot have properties
+  if (typeof value !== 'object' && typeof value !== 'function') {
+    return formatPrimitive(ctx.stylize, value);
+  }
+  if (value === null) {
+    return ctx.stylize('null', 'null');
+  }
 
-function formatValue(ctx, value, recurseTimes) {
   // Provide a hook for user-specified inspect functions.
   // Check that value is an object with an inspect function on it
-  if (ctx.customInspect &&
-      value &&
-      isFunction(value.inspect) &&
-      // Filter out the util module, it's inspect function is special
-      value.inspect !== exports.inspect &&
-      // Also filter out any prototype objects using the circular check.
-      !(value.constructor && value.constructor.prototype === value)) {
-    var ret = value.inspect(recurseTimes, ctx);
-    if (!isString(ret)) {
-      ret = formatValue(ctx, ret, recurseTimes);
+  if (ctx.customInspect && customInspectSymbol) {
+    var maybeCustomInspect = value[customInspectSymbol] || value.inspect;
+
+    if (typeof maybeCustomInspect === 'function' &&
+        // Filter out the util module, its inspect function is special
+        maybeCustomInspect !== exports.inspect &&
+        // Also filter out any prototype objects using the circular check.
+        !(value.constructor && value.constructor.prototype === value)) {
+      var ret = maybeCustomInspect.call(value, recurseTimes, ctx);
+
+      // If the custom inspection method returned `this`, don't go into
+      // infinite recursion.
+      if (ret !== value) {
+        if (typeof ret !== 'string') {
+          return formatValue(ctx, ret, recurseTimes);
+        }
+        return ret;
+      }
     }
-    return ret;
   }
 
-  // Primitive types cannot have properties
-  var primitive = formatPrimitive(ctx, value);
-  if (primitive) {
-    return primitive;
-  }
+  var keys;
+  var symbols = typeof Symbol !== 'undefined' ? Object.getOwnPropertySymbols(value) : [];
 
   // Look up the keys of the object.
-  var keys = Object.keys(value);
-  var visibleKeys = arrayToHash(keys);
-
   if (ctx.showHidden) {
     keys = Object.getOwnPropertyNames(value);
+  } else {
+    keys = Object.keys(value);
+    if (symbols.length !== 0)
+      symbols = symbols.filter((key) => propertyIsEnumerable.call(value, key));
   }
 
-  // IE doesn't make error fields non-enumerable
-  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-  if (isError(value)
-      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
-    return formatError(value);
-  }
+  var keyLength = keys.length + symbols.length;
+  var constructor = getConstructorOf(value);
+  var ctorName = constructor && constructor.name ?
+    constructor.name + ' ' : '';
 
-  // Some type of object without properties can be shortcutted.
-  if (keys.length === 0) {
-    if (isFunction(value)) {
-      var name = value.name ? ': ' + value.name : '';
-      return ctx.stylize('[Function' + name + ']', 'special');
-    }
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-    }
-    if (isDate(value)) {
-      return ctx.stylize(Date.prototype.toString.call(value), 'date');
-    }
-    if (isError(value)) {
-      return formatError(value);
-    }
-  }
+  var base = '';
+  var formatter = formatObject;
+  var braces;
+  var noIterator = true;
+  var raw;
 
-  var base = '', array = false, braces = ['{', '}'];
-
-  // Make Array say that they are Array
-  if (isArray(value)) {
-    array = true;
-    braces = ['[', ']'];
-  }
-
-  // Make functions say that they are functions
-  if (isFunction(value)) {
-    var n = value.name ? ': ' + value.name : '';
-    base = ' [Function' + n + ']';
-  }
-
-  // Make RegExps say that they are RegExps
-  if (isRegExp(value)) {
-    base = ' ' + RegExp.prototype.toString.call(value);
-  }
-
-  // Make dates with properties first say the date
-  if (isDate(value)) {
-    base = ' ' + Date.prototype.toUTCString.call(value);
-  }
-
-  // Make error with message first say the error
-  if (isError(value)) {
-    base = ' ' + formatError(value);
-  }
-
-  if (keys.length === 0 && (!array || value.length == 0)) {
-    return braces[0] + base + braces[1];
-  }
-
-  if (recurseTimes < 0) {
-    if (isRegExp(value)) {
-      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+  // Iterators and the rest are split to reduce checks
+  if (value[Symbol.iterator]) {
+    noIterator = false;
+    if (Array.isArray(value)) {
+      // Only set the constructor for non ordinary ("Array [...]") arrays.
+      braces = [(ctorName === 'Array ' ? '' : ctorName) + '[', ']'];
+      if (value.length === 0 && keyLength === 0)
+        return braces[0] + ']';
+      formatter = formatArray;
+    } else if (isSet(value)) {
+      if (value.size === 0 && keyLength === 0)
+        return ctorName + '{}';
+      braces = [ctorName + '{', '}'];
+      formatter = formatSet;
+    } else if (isMap(value)) {
+      if (value.size === 0 && keyLength === 0)
+        return ctorName + '{}';
+      braces = [ctorName + '{', '}'];
+      formatter = formatMap;
+    } else if (isTypedArray(value)) {
+      braces = [ctorName + '[', ']'];
+      formatter = formatTypedArray;
+    } else if (isMapIterator(value)) {
+      braces = ['MapIterator {', '}'];
+      formatter = formatCollectionIterator;
+    } else if (isSetIterator(value)) {
+      braces = ['SetIterator {', '}'];
+      formatter = formatCollectionIterator;
     } else {
-      return ctx.stylize('[Object]', 'special');
+      // Check for boxed strings with valueOf()
+      // The .valueOf() call can fail for a multitude of reasons
+      try {
+        raw = value.valueOf();
+      } catch (e) { /* ignore */ }
+
+      if (typeof raw === 'string') {
+        var formatted = formatPrimitive(stylizeNoColor, raw);
+        if (keyLength === raw.length)
+          return ctx.stylize('[String: ' + formatted + ']', 'string');
+        base = ' [String: ' + formatted + ']';
+        // For boxed Strings, we have to remove the 0-n indexed entries,
+        // since they just noisy up the output and are redundant
+        // Make boxed primitive Strings look like such
+        keys = keys.slice(value.length);
+        braces = ['{', '}'];
+      } else {
+        noIterator = true;
+      }
     }
+  }
+  if (noIterator) {
+    braces = ['{', '}'];
+    if (ctorName === 'Object ') {
+      // Object fast path
+      if (keyLength === 0)
+        return '{}';
+    } else if (typeof value === 'function') {
+      var name = constructor.name + (value.name ? ': ' + value.name : '');
+      if (keyLength === 0)
+        return ctx.stylize('[' + name + ']', 'special');
+      base = ' [' + name + ']';
+    } else if (isRegExp(value)) {
+      // Make RegExps say that they are RegExps
+      if (keyLength === 0 || recurseTimes < 0)
+        return ctx.stylize(regExpToString.call(value), 'regexp');
+      base = ' ' + regExpToString.call(value);
+    } else if (isDate(value)) {
+      if (keyLength === 0) {
+        if (Number.isNaN(value.getTime()))
+          return ctx.stylize(value.toString(), 'date');
+        return ctx.stylize(dateToISOString.call(value), 'date');
+      }
+      // Make dates with properties first say the date
+      base = ' ' + dateToISOString.call(value);
+    } else if (isError(value)) {
+      // Make error with message first say the error
+      if (keyLength === 0)
+        return formatError(value);
+      base = ' ' + formatError(value);
+    } else if (isAnyArrayBuffer(value)) {
+      // Fast path for ArrayBuffer and SharedArrayBuffer.
+      // Can't do the same for DataView because it has a non-primitive
+      // .buffer property that we need to recurse for.
+      if (keyLength === 0)
+        return ctorName +
+              '{ byteLength: ' + formatNumber(ctx.stylize, value.byteLength) + ' }';
+      braces[0] = ctorName + '{';
+      keys.unshift('byteLength');
+    } else if (isDataView(value)) {
+      braces[0] = ctorName + '{';
+      // .buffer goes last, it's not a primitive like the others.
+      keys.unshift('byteLength', 'byteOffset', 'buffer');
+    } else if (isPromise(value)) {
+      braces[0] = ctorName + '{';
+      formatter = formatPromise;
+    } else {
+      // Check boxed primitives other than string with valueOf()
+      // NOTE: `Date` has to be checked first!
+      // The .valueOf() call can fail for a multitude of reasons
+      try {
+        raw = value.valueOf();
+      } catch (e) { /* ignore */ }
+
+      if (typeof raw === 'number') {
+        // Make boxed primitive Numbers look like such
+        var formatted = formatPrimitive(stylizeNoColor, raw);
+        if (keyLength === 0)
+          return ctx.stylize(`[Number: ${formatted}]`, 'number');
+        base = ` [Number: ${formatted}]`;
+      } else if (typeof raw === 'boolean') {
+        // Make boxed primitive Booleans look like such
+        var formatted = formatPrimitive(stylizeNoColor, raw);
+        if (keyLength === 0)
+          return ctx.stylize('[Boolean: ' + formatted + ']', 'boolean');
+        base = ' [Boolean: ' + formatted + ']';
+      } else if (typeof raw === 'symbol') {
+        var formatted = formatPrimitive(stylizeNoColor, raw);
+        return ctx.stylize('[Symbol: ' + formatted + ']', 'symbol');
+      } else if (keyLength === 0) {
+        return ctorName + '{}';
+      } else {
+        braces[0] = ctorName + '{';
+      }
+    }
+  }
+
+  // Using an array here is actually better for the average case than using
+  // a Set. `seen` will only check for the depth and will never grow to large.
+  if (ctx.seen.indexOf(value) !== -1)
+    return ctx.stylize('[Circular]', 'special');
+
+  if (recurseTimes != null) {
+    if (recurseTimes < 0)
+      return ctx.stylize('[' + (constructor ? constructor.name : 'Object') + ']',
+                         'special');
+    recurseTimes -= 1;
   }
 
   ctx.seen.push(value);
+  var output = formatter(ctx, value, recurseTimes, keys);
 
-  var output;
-  if (array) {
-    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
-  } else {
-    output = keys.map(function(key) {
-      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
-    });
+  for (var i = 0; i < symbols.length; i++) {
+    output.push(formatProperty(ctx, value, recurseTimes, symbols[i], 0));
   }
-
   ctx.seen.pop();
 
-  return reduceToSingleString(output, base, braces);
+  return reduceToSingleString(ctx, output, base, braces, ln);
 }
 
 
-function formatPrimitive(ctx, value) {
-  if (isUndefined(value))
-    return ctx.stylize('undefined', 'undefined');
-  if (isString(value)) {
-    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-                                             .replace(/'/g, "\\'")
-                                             .replace(/\\"/g, '"') + '\'';
-    return ctx.stylize(simple, 'string');
-  }
-  if (isNumber(value))
-    return ctx.stylize('' + value, 'number');
-  if (isBoolean(value))
-    return ctx.stylize('' + value, 'boolean');
-  // For some reason typeof null is "object", so special case here.
-  if (isNull(value))
-    return ctx.stylize('null', 'null');
+
+function formatNumber(fn, value) {
+  // Format -0 as '-0'. Checking `value === -0` won't distinguish 0 from -0.
+  if (value === 0 && (1 / value) === -Infinity)
+    return fn('-0', 'number');
+  return fn(String(value), 'number');
+}
+
+function formatPrimitive(fn, value) {
+  if (typeof value === 'string')
+    return fn(strEscape(value), 'string');
+  if (typeof value === 'number')
+    return formatNumber(fn, value);
+  if (typeof value === 'boolean')
+    return fn(String(value), 'boolean');
+  if (typeof value === 'undefined')
+    return fn('undefined', 'undefined');
+  // es6 symbol primitive
+  return fn(value.toString(), 'symbol');
 }
 
 
 function formatError(value) {
-  return '[' + Error.prototype.toString.call(value) + ']';
+  return value.stack || '[' + errorToString.call(value) + ']';
 }
 
-
-function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-  var output = [];
-  for (var i = 0, l = value.length; i < l; ++i) {
-    if (hasOwnProperty(value, String(i))) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          String(i), true));
-    } else {
-      output.push('');
-    }
-  }
-  keys.forEach(function(key) {
-    if (!key.match(/^\d+$/)) {
-      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-          key, true));
-    }
-  });
+function formatObject(ctx, value, recurseTimes, keys) {
+  var len = keys.length;
+  var output = new Array(len);
+  for (var i = 0; i < len; i++)
+    output[i] = formatProperty(ctx, value, recurseTimes, keys[i], 0);
   return output;
 }
 
+// The array is sparse and/or has extra keys
+function formatSpecialArray(ctx, value, recurseTimes, keys, maxLength, valLen) {
+  var output = [];
+  var keyLen = keys.length;
+  var visibleLength = 0;
+  var i = 0;
+  if (keyLen !== 0 && numberRegExp.test(keys[0])) {
+    for (var key of keys) {
+      if (visibleLength === maxLength)
+        break;
+      var index = +key;
+      // Arrays can only have up to 2^32 - 1 entries
+      if (index > 2 ** 32 - 2)
+        break;
+      if (i !== index) {
+        if (!numberRegExp.test(key))
+          break;
+        var emptyItems = index - i;
+        var ending = emptyItems > 1 ? 's' : '';
+        var message = '<' + emptyItems + ' empty item' +  ending + '>';
+        output.push(ctx.stylize(message, 'undefined'));
+        i = index;
+        if (++visibleLength === maxLength)
+          break;
+      }
+      output.push(formatProperty(ctx, value, recurseTimes, key, 1));
+      visibleLength++;
+      i++;
+    }
+  }
+  if (i < valLen && visibleLength !== maxLength) {
+    var len = valLen - i;
+    var ending = len > 1 ? 's' : '';
+    var message = '<' + len + ' empty item' +  ending + '>';
+    output.push(ctx.stylize(message, 'undefined'));
+    i = valLen;
+    if (keyLen === 0)
+      return output;
+  }
+  var remaining = valLen - i;
+  if (remaining > 0) {
+    output.push('... ' + remaining + ' more item' + (remaining > 1 ? 's' : ''));
+  }
+  if (ctx.showHidden && keys[keyLen - 1] === 'length') {
+    // No extra keys
+    output.push(formatProperty(ctx, value, recurseTimes, 'length', 2));
+  } else if (valLen === 0 ||
+    keyLen > valLen && keys[valLen - 1] === String(valLen - 1)) {
+    // The array is not sparse
+    for (i = valLen; i < keyLen; i++)
+      output.push(formatProperty(ctx, value, recurseTimes, keys[i], 2));
+  } else if (keys[keyLen - 1] !== String(valLen - 1)) {
+    var extra = [];
+    // Only handle special keys
+    var key;
+    for (i = keys.length - 1; i >= 0; i--) {
+      key = keys[i];
+      if (numberRegExp.test(key) && +key < Math.pow(2, 32) - 1)
+        break;
+      extra.push(formatProperty(ctx, value, recurseTimes, key, 2));
+    }
+    for (i = extra.length - 1; i >= 0; i--)
+      output.push(extra[i]);
+  }
+  return output;
+}
 
-function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-  var name, str, desc;
-  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-  if (desc.get) {
-    if (desc.set) {
+function formatArray(ctx, value, recurseTimes, keys) {
+  var len = Math.min(Math.max(0, ctx.maxArrayLength), value.length);
+  var hidden = ctx.showHidden ? 1 : 0;
+  var valLen = value.length;
+  var keyLen = keys.length - hidden;
+  if (keyLen !== valLen || keys[keyLen - 1] !== String(valLen - 1))
+    return formatSpecialArray(ctx, value, recurseTimes, keys, len, valLen);
+
+  var remaining = valLen - len;
+  var output = new Array(len + (remaining > 0 ? 1 : 0) + hidden);
+  for (var i = 0; i < len; i++)
+    output[i] = formatProperty(ctx, value, recurseTimes, keys[i], 1);
+  if (remaining > 0)
+    output[i++] = '... ' + remaining + ' more item' + (remaining > 1 ? 's' : '');
+  if (ctx.showHidden === true)
+    output[i] = formatProperty(ctx, value, recurseTimes, 'length', 2);
+  return output;
+}
+
+function formatTypedArray(ctx, value, recurseTimes, keys) {
+  var maxLength = Math.min(Math.max(0, ctx.maxArrayLength), value.length);
+  var remaining = value.length - maxLength;
+  var output = new Array(maxLength + (remaining > 0 ? 1 : 0));
+  for (var i = 0; i < maxLength; ++i)
+    output[i] = formatNumber(ctx.stylize, value[i]);
+  if (remaining > 0)
+    output[i] = '... ' + remaining + ' more item' + (remaining > 1 ? 's' : '');
+  if (ctx.showHidden) {
+    // .buffer goes last, it's not a primitive like the others.
+    var extraKeys = [
+      'BYTES_PER_ELEMENT',
+      'length',
+      'byteLength',
+      'byteOffset',
+      'buffer'
+    ];
+    for (i = 0; i < extraKeys.length; i++) {
+      var str = formatValue(ctx, value[extraKeys[i]], recurseTimes);
+      output.push('[' + extraKeys[i] + ']: ' + str);
+    }
+  }
+  // TypedArrays cannot have holes. Therefore it is safe to assume that all
+  // extra keys are indexed after value.length.
+  for (i = value.length; i < keys.length; i++) {
+    output.push(formatProperty(ctx, value, recurseTimes, keys[i], 2));
+  }
+  return output;
+}
+
+function formatSet(ctx, value, recurseTimes, keys) {
+  var output = new Array(value.size + keys.length + (ctx.showHidden ? 1 : 0));
+  var i = 0;
+  for (var v of value)
+    output[i++] = formatValue(ctx, v, recurseTimes);
+  // With `showHidden`, `length` will display as a hidden property for
+  // arrays. For consistency's sake, do the same for `size`, even though this
+  // property isn't selected by Object.getOwnPropertyNames().
+  if (ctx.showHidden)
+    output[i++] = '[size]: ' + ctx.stylize(String(value.size), 'number');
+  for (var n = 0; n < keys.length; n++) {
+    output[i++] = formatProperty(ctx, value, recurseTimes, keys[n], 0);
+  }
+  return output;
+}
+
+function formatMap(ctx, value, recurseTimes, keys) {
+  var output = new Array(value.size + keys.length + (ctx.showHidden ? 1 : 0));
+  var i = 0;
+  for (var [k, v] of value)
+    output[i++] = formatValue(ctx, k, recurseTimes) + ' => ' +
+      formatValue(ctx, v, recurseTimes);
+  // See comment in formatSet
+  if (ctx.showHidden)
+    output[i++] = '[size]: ' + ctx.stylize(String(value.size), 'number');
+  for (var n = 0; n < keys.length; n++) {
+    output[i++] = formatProperty(ctx, value, recurseTimes, keys[n], 0);
+  }
+  return output;
+}
+
+function formatPromise(ctx, value, recurseTimes, keys) {
+  var output = [];
+  for (var n = 0; n < keys.length; n++) {
+    output.push(formatProperty(ctx, value, recurseTimes, keys[n], 0));
+  }
+  return output;
+}
+
+function formatProperty(ctx, value, recurseTimes, key, array) {
+  var name, str;
+  var desc = Object.getOwnPropertyDescriptor(value, key) ||
+    { value: value[key], enumerable: true };
+  if (desc.value !== undefined) {
+    var diff = array === 0 ? 3 : 2;
+    ctx.indentationLvl += diff;
+    str = formatValue(ctx, desc.value, recurseTimes, array === 0);
+    ctx.indentationLvl -= diff;
+  } else if (desc.get !== undefined) {
+    if (desc.set !== undefined) {
       str = ctx.stylize('[Getter/Setter]', 'special');
     } else {
       str = ctx.stylize('[Getter]', 'special');
     }
+  } else if (desc.set !== undefined) {
+    str = ctx.stylize('[Setter]', 'special');
   } else {
-    if (desc.set) {
-      str = ctx.stylize('[Setter]', 'special');
-    }
+    str = ctx.stylize('undefined', 'undefined');
   }
-  if (!hasOwnProperty(visibleKeys, key)) {
+  if (array === 1) {
+    return str;
+  }
+  if (typeof key === 'symbol') {
+    name = '[' + ctx.stylize(key.toString(), 'symbol') + ']';
+  } else if (desc.enumerable === false) {
     name = '[' + key + ']';
-  }
-  if (!str) {
-    if (ctx.seen.indexOf(desc.value) < 0) {
-      if (isNull(recurseTimes)) {
-        str = formatValue(ctx, desc.value, null);
-      } else {
-        str = formatValue(ctx, desc.value, recurseTimes - 1);
-      }
-      if (str.indexOf('\n') > -1) {
-        if (array) {
-          str = str.split('\n').map(function(line) {
-            return '  ' + line;
-          }).join('\n').substr(2);
-        } else {
-          str = '\n' + str.split('\n').map(function(line) {
-            return '   ' + line;
-          }).join('\n');
-        }
-      }
-    } else {
-      str = ctx.stylize('[Circular]', 'special');
-    }
-  }
-  if (isUndefined(name)) {
-    if (array && key.match(/^\d+$/)) {
-      return str;
-    }
-    name = JSON.stringify('' + key);
-    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-      name = name.substr(1, name.length - 2);
-      name = ctx.stylize(name, 'name');
-    } else {
-      name = name.replace(/'/g, "\\'")
-                 .replace(/\\"/g, '"')
-                 .replace(/(^"|"$)/g, "'");
-      name = ctx.stylize(name, 'string');
-    }
+  } else if (keyStrRegExp.test(key)) {
+    name = ctx.stylize(key, 'name');
+  } else {
+    name = ctx.stylize(strEscape(key), 'string');
   }
 
   return name + ': ' + str;
 }
 
 
-function reduceToSingleString(output, base, braces) {
-  var numLinesEst = 0;
-  var length = output.reduce(function(prev, cur) {
-    numLinesEst++;
-    if (cur.indexOf('\n') >= 0) numLinesEst++;
-    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
-  }, 0);
-
-  if (length > 60) {
-    return braces[0] +
-           (base === '' ? '' : base + '\n ') +
-           ' ' +
-           output.join(',\n  ') +
-           ' ' +
-           braces[1];
+function reduceToSingleString(ctx, output, base, braces, addLn) {
+  var breakLength = ctx.breakLength;
+  if (output.length * 2 <= breakLength) {
+    var length = 0;
+    for (var i = 0; i < output.length && length <= breakLength; i++) {
+      if (ctx.colors) {
+        length += removeColors(output[i]).length + 1;
+      } else {
+        length += output[i].length + 1;
+      }
+    }
+    if (length <= breakLength)
+      return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
   }
-
-  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+  // If the opening "brace" is too large, like in the case of "Set {",
+  // we need to force the first item to be on the next line or the
+  // items will not line up correctly.
+  var indentation = ' '.repeat(ctx.indentationLvl);
+  var extraLn = addLn === true ? '\n' +  indentation : '';
+  var ln = base === '' && braces[0].length === 1 ?
+    ' ' : base + '\n' + indentation + '  ';
+  var str = output.join(',\n' + indentation + '  ');
+  return extraLn + braces[0] + ln + str + ' ' + braces[1];
 }
+
 
 
 // NOTE: These type checking functions intentionally don't use `instanceof`

@@ -24,7 +24,8 @@
     "test:browsers": "zuul test/browser/*.js"
   },
   "dependencies": {
-    "inherits": "2.0.1"
+    "inherits": "2.0.1",
+    "is-typed-array": "^1.0.4"
   },
   "license": "MIT",
   "devDependencies": {
