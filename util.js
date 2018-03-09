@@ -19,6 +19,16 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
+  function getOwnPropertyDescriptors(obj) {
+    var keys = Object.keys(obj);
+    var descriptors = {};
+    for (var i = 0; i < keys.length; i++) {
+      descriptors[keys[i]] = Object.getOwnPropertyDescriptor(obj, keys[i]);
+    }
+    return descriptors;
+  };
+
 var formatRegExp = /%[sdj%]/g;
 exports.format = function(f) {
   if (!isString(f)) {
@@ -637,7 +647,7 @@ exports.promisify = function promisify(original) {
   });
   return Object.defineProperties(
     fn,
-    Object.getOwnPropertyDescriptors(original)
+    getOwnPropertyDescriptors(original)
   );
 }
 
@@ -687,7 +697,7 @@ function callbackify(original) {
 
   Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
   Object.defineProperties(callbackified,
-                          Object.getOwnPropertyDescriptors(original));
+                          getOwnPropertyDescriptors(original));
   return callbackified;
 }
 exports.callbackify = callbackify;
