@@ -29,8 +29,8 @@
   "license": "MIT",
   "devDependencies": {
     "airtap": "0.0.6",
-    "run-series": "^1.1.4",
-    "tape": "^4.9.0"
+    "run-series": "~1.1.4",
+    "tape": "~4.9.0"
   },
   "browser": {
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
