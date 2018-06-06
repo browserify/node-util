@@ -19,73 +19,76 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var assert = require('assert');
-
+var test = require('tape');
 var util = require('../../');
 
-suite('is');
-
-test('util.isArray', function () {
-  assert.equal(true, util.isArray([]));
-  assert.equal(true, util.isArray(Array()));
-  assert.equal(true, util.isArray(new Array()));
-  assert.equal(true, util.isArray(new Array(5)));
-  assert.equal(true, util.isArray(new Array('with', 'some', 'entries')));
-  assert.equal(false, util.isArray({}));
-  assert.equal(false, util.isArray({ push: function() {} }));
-  assert.equal(false, util.isArray(/regexp/));
-  assert.equal(false, util.isArray(new Error()));
-  assert.equal(false, util.isArray(Object.create(Array.prototype)));
+test('util.isArray', function (t) {
+  t.equal(true, util.isArray([]));
+  t.equal(true, util.isArray(Array()));
+  t.equal(true, util.isArray(new Array()));
+  t.equal(true, util.isArray(new Array(5)));
+  t.equal(true, util.isArray(new Array('with', 'some', 'entries')));
+  t.equal(false, util.isArray({}));
+  t.equal(false, util.isArray({ push: function() {} }));
+  t.equal(false, util.isArray(/regexp/));
+  t.equal(false, util.isArray(new Error()));
+  t.equal(false, util.isArray(Object.create(Array.prototype)));
+  t.end();
 });
 
-test('util.isRegExp', function () {
-  assert.equal(true, util.isRegExp(/regexp/));
-  assert.equal(true, util.isRegExp(RegExp()));
-  assert.equal(true, util.isRegExp(new RegExp()));
-  assert.equal(false, util.isRegExp({}));
-  assert.equal(false, util.isRegExp([]));
-  assert.equal(false, util.isRegExp(new Date()));
-  assert.equal(false, util.isRegExp(Object.create(RegExp.prototype)));
+test('util.isRegExp', function (t) {
+  t.equal(true, util.isRegExp(/regexp/));
+  t.equal(true, util.isRegExp(RegExp()));
+  t.equal(true, util.isRegExp(new RegExp()));
+  t.equal(false, util.isRegExp({}));
+  t.equal(false, util.isRegExp([]));
+  t.equal(false, util.isRegExp(new Date()));
+  t.equal(false, util.isRegExp(Object.create(RegExp.prototype)));
+  t.end();
 });
 
-test('util.isDate', function () {
-  assert.equal(true, util.isDate(new Date()));
-  assert.equal(true, util.isDate(new Date(0)));
-  assert.equal(false, util.isDate(Date()));
-  assert.equal(false, util.isDate({}));
-  assert.equal(false, util.isDate([]));
-  assert.equal(false, util.isDate(new Error()));
-  assert.equal(false, util.isDate(Object.create(Date.prototype)));
+test('util.isDate', function (t) {
+  t.equal(true, util.isDate(new Date()));
+  t.equal(true, util.isDate(new Date(0)));
+  t.equal(false, util.isDate(Date()));
+  t.equal(false, util.isDate({}));
+  t.equal(false, util.isDate([]));
+  t.equal(false, util.isDate(new Error()));
+  t.equal(false, util.isDate(Object.create(Date.prototype)));
+  t.end();
 });
 
-test('util.isError', function () {
-  assert.equal(true, util.isError(new Error()));
-  assert.equal(true, util.isError(new TypeError()));
-  assert.equal(true, util.isError(new SyntaxError()));
-  assert.equal(false, util.isError({}));
-  assert.equal(false, util.isError({ name: 'Error', message: '' }));
-  assert.equal(false, util.isError([]));
-  assert.equal(true, util.isError(Object.create(Error.prototype)));
+test('util.isError', function (t) {
+  t.equal(true, util.isError(new Error()));
+  t.equal(true, util.isError(new TypeError()));
+  t.equal(true, util.isError(new SyntaxError()));
+  t.equal(false, util.isError({}));
+  t.equal(false, util.isError({ name: 'Error', message: '' }));
+  t.equal(false, util.isError([]));
+  t.equal(true, util.isError(Object.create(Error.prototype)));
+  t.end();
 });
 
-test('util._extend', function () {
-  assert.deepEqual(util._extend({a:1}),             {a:1});
-  assert.deepEqual(util._extend({a:1}, []),         {a:1});
-  assert.deepEqual(util._extend({a:1}, null),       {a:1});
-  assert.deepEqual(util._extend({a:1}, true),       {a:1});
-  assert.deepEqual(util._extend({a:1}, false),      {a:1});
-  assert.deepEqual(util._extend({a:1}, {b:2}),      {a:1, b:2});
-  assert.deepEqual(util._extend({a:1, b:2}, {b:3}), {a:1, b:3});
+test('util._extend', function (t) {
+  t.deepEqual(util._extend({a:1}),             {a:1});
+  t.deepEqual(util._extend({a:1}, []),         {a:1});
+  t.deepEqual(util._extend({a:1}, null),       {a:1});
+  t.deepEqual(util._extend({a:1}, true),       {a:1});
+  t.deepEqual(util._extend({a:1}, false),      {a:1});
+  t.deepEqual(util._extend({a:1}, {b:2}),      {a:1, b:2});
+  t.deepEqual(util._extend({a:1, b:2}, {b:3}), {a:1, b:3});
+  t.end();
 });
 
-test('util.isBuffer', function () {
-  assert.equal(true, util.isBuffer(new Buffer(4)));
-  assert.equal(true, util.isBuffer(Buffer(4)));
-  assert.equal(true, util.isBuffer(new Buffer(4)));
-  assert.equal(true, util.isBuffer(new Buffer([1, 2, 3, 4])));
-  assert.equal(false, util.isBuffer({}));
-  assert.equal(false, util.isBuffer([]));
-  assert.equal(false, util.isBuffer(new Error()));
-  assert.equal(false, util.isRegExp(new Date()));
-  assert.equal(true, util.isBuffer(Object.create(Buffer.prototype)));
+test('util.isBuffer', function (t) {
+  t.equal(true, util.isBuffer(new Buffer(4)));
+  t.equal(true, util.isBuffer(Buffer(4)));
+  t.equal(true, util.isBuffer(new Buffer(4)));
+  t.equal(true, util.isBuffer(new Buffer([1, 2, 3, 4])));
+  t.equal(false, util.isBuffer({}));
+  t.equal(false, util.isBuffer([]));
+  t.equal(false, util.isBuffer(new Error()));
+  t.equal(false, util.isRegExp(new Date()));
+  t.equal(true, util.isBuffer(Object.create(Buffer.prototype)));
+  t.end();
 });
