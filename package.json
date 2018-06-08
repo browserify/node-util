@@ -35,6 +35,7 @@
   "devDependencies": {
     "airtap": "~1.0.0",
     "is-async-supported": "~1.2.0",
+    "object.assign": "~4.1.0",
     "run-series": "~1.1.4",
     "tape": "~4.9.0"
   },

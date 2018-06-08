@@ -21,6 +21,7 @@
 
 'use strict';
 var assert = require('assert');
+var ObjectAssign = require('object.assign');
 
 var modeArgv = process.argv[2]
 var sectionArgv = process.argv[3]
@@ -60,7 +61,7 @@ function test(environ, shouldWrite, section) {
 
   var spawn = require('child_process').spawn;
   var child = spawn(process.execPath, [__filename, 'child', section], {
-    env: Object.assign(process.env, { NODE_DEBUG: environ })
+    env: ObjectAssign(process.env, { NODE_DEBUG: environ })
   });
 
   if (shouldWrite) {
