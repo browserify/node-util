@@ -17,66 +17,50 @@ var TypedArrayProto_toStringTag =
 // Cached to make sure no userland code can tamper with it.
 var isArrayBufferView = ArrayBuffer.isView;
 
-function isTypedArray(value) {
+exports.isTypedArray = function(value) {
   return TypedArrayProto_toStringTag(value) !== undefined;
 }
 
-function isUint8Array(value) {
+exports.isUint8Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Uint8Array';
 }
 
-function isUint8ClampedArray(value) {
+exports.isUint8ClampedArray = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
 }
 
-function isUint16Array(value) {
+exports.isUint16Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Uint16Array';
 }
 
-function isUint32Array(value) {
+exports.isUint32Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Uint32Array';
 }
 
-function isInt8Array(value) {
+exports.isInt8Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Int8Array';
 }
 
-function isInt16Array(value) {
+exports.isInt16Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Int16Array';
 }
 
-function isInt32Array(value) {
+exports.isInt32Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Int32Array';
 }
 
-function isFloat32Array(value) {
+exports.isFloat32Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Float32Array';
 }
 
-function isFloat64Array(value) {
+exports.isFloat64Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'Float64Array';
 }
 
-function isBigInt64Array(value) {
+exports.isBigInt64Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
 }
 
-function isBigUint64Array(value) {
+exports.isBigUint64Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
 }
-
-module.exports = {
-  isArrayBufferView,
-  isTypedArray,
-  isUint8Array,
-  isUint8ClampedArray,
-  isUint16Array,
-  isUint32Array,
-  isInt8Array,
-  isInt16Array,
-  isInt32Array,
-  isFloat32Array,
-  isFloat64Array,
-  isBigInt64Array,
-  isBigUint64Array
-};
