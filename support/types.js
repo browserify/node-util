@@ -64,3 +64,11 @@ exports.isBigInt64Array = function(value) {
 exports.isBigUint64Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
 }
+
+exports.isPromise = function(value) {
+  return (
+    typeof input === 'object' &&
+    typeof input.then === 'function' &&
+    typeof input.catch === 'function'
+  );
+}
