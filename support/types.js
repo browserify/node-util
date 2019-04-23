@@ -14,8 +14,7 @@ var TypedArrayProto_toStringTag =
       Object.getOwnPropertyDescriptor(TypedArrayPrototype,
                                       Symbol.toStringTag).get);
 
-// Cached to make sure no userland code can tamper with it.
-var isArrayBufferView = ArrayBuffer.isView;
+exports.isArrayBufferView = ArrayBuffer.isView;
 
 exports.isTypedArray = function(value) {
   return TypedArrayProto_toStringTag(value) !== undefined;
