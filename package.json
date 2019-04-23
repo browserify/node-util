@@ -21,7 +21,8 @@
   ],
   "scripts": {
     "test": "node test/node/index.js",
-    "test:browsers": "airtap test/browser/index.js"
+    "test:browsers": "airtap test/browser/index.js",
+    "test:browsers:local": "npm run test:browsers -- --local"
   },
   "dependencies": {
     "inherits": "2.0.3"
