@@ -65,10 +65,8 @@ exports.isBigUint64Array = function(value) {
   return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
 }
 
+var ObjectToString = uncurryThis(Object.prototype.toString);
+
 exports.isPromise = function(value) {
-  return (
-    typeof input === 'object' &&
-    typeof input.then === 'function' &&
-    typeof input.catch === 'function'
-  );
+  return ObjectToString(value) === '[object Promise]';
 }
