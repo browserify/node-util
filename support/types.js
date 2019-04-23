@@ -117,3 +117,10 @@ exports.isMapIterator = function(value) {
 exports.isMapIterator = function(value) {
   return ObjectToString(value) === '[object Map Iterator]';
 }
+
+exports.isAnyArrayBuffer = function(value) {
+  return (
+    exports.isArrayBuffer(value) ||
+    exports.isSharedArrayBuffer(value)
+  );
+}
