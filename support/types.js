@@ -70,3 +70,51 @@ var ObjectToString = uncurryThis(Object.prototype.toString);
 exports.isPromise = function(value) {
   return ObjectToString(value) === '[object Promise]';
 }
+
+exports.isMap = function(value) {
+  return ObjectToString(value) === '[object Map]';
+}
+
+exports.isSet = function(value) {
+  return ObjectToString(value) === '[object Set]';
+}
+
+exports.isWeakMap = function(value) {
+  return ObjectToString(value) === '[object WeakMap]';
+}
+
+exports.isWeakSet = function(value) {
+  return ObjectToString(value) === '[object WeakSet]';
+}
+
+exports.isArrayBuffer = function(value) {
+  return ObjectToString(value) === '[object ArrayBuffer]';
+}
+
+exports.isDataView = function(value) {
+  return ObjectToString(value) === '[object DataView]';
+}
+
+exports.isArrayBuffer = function(value) {
+  return ObjectToString(value) === '[object ArrayBuffer]';
+}
+
+exports.isSharedArrayBuffer = function(value) {
+  return ObjectToString(value) === '[object SharedArrayBuffer]';
+}
+
+exports.isAsyncFunction = function(value) {
+  return ObjectToString(value) === '[object AsyncFunction]';
+}
+
+exports.isGeneratorFunction = function(value) {
+  return ObjectToString(value) === '[object GeneratorFunction]';
+};
+
+exports.isMapIterator = function(value) {
+  return ObjectToString(value) === '[object Map Iterator]';
+}
+
+exports.isMapIterator = function(value) {
+  return ObjectToString(value) === '[object Map Iterator]';
+}
