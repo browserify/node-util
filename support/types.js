@@ -137,3 +137,16 @@ exports.isNumberObject = function(value) {
     return false;
   }
 }
+
+var stringValue = uncurryThis(String.prototype.valueOf);
+exports.isStringObject = function(value) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    stringValue(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
