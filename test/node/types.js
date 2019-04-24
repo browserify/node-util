@@ -32,7 +32,7 @@ for (const [ value, _method ] of [
   [ new String(), 'isStringObject' ],
   [ Object(Symbol()), 'isSymbolObject' ],
   [ Object(BigInt(0)), 'isBigIntObject' ],
-  // [ new Error(), 'isNativeError' ],
+  [ new Error(), 'isNativeError' ],
   [ new RegExp() ],
   [ async function() {}, 'isAsyncFunction' ],
   [ function*() {}, 'isGeneratorFunction' ],
