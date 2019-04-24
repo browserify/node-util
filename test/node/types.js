@@ -3,19 +3,20 @@
 
 // Flags: --experimental-vm-modules --expose-internals
 'use strict';
-require('../common');
-const fixtures = require('../common/fixtures');
+require('./common');
 const assert = require('assert');
 const { types, inspect } = require('util');
 const vm = require('vm');
-const { internalBinding } = require('internal/test/binding');
-const { JSStream } = internalBinding('js_stream');
 
-const external = (new JSStream())._externalStream;
-const wasmBuffer = fixtures.readSync('simple.wasm');
+// [browserify] We can't test this in userland
+// const { internalBinding } = require('internal/test/binding');
+// const { JSStream } = internalBinding('js_stream');
+// const external = (new JSStream())._externalStream;
+
+const wasmBuffer = Buffer.from('0061736d01000000', 'hex');
 
 for (const [ value, _method ] of [
-  [ external, 'isExternal' ],
+  // [ external, 'isExternal' ],
   [ new Date() ],
   [ (function() { return arguments; })(), 'isArgumentsObject' ],
   [ new Boolean(), 'isBooleanObject' ],
@@ -281,10 +282,10 @@ for (const [ value, _method ] of [
   }
 }
 
-(async () => {
-  const m = new vm.SourceTextModule('');
-  await m.link(() => 0);
-  m.instantiate();
-  await m.evaluate();
-  assert.ok(types.isModuleNamespaceObject(m.namespace));
-})();
+// (async () => {
+//   const m = new vm.SourceTextModule('');
+//   await m.link(() => 0);
+//   m.instantiate();
+//   await m.evaluate();
+//   assert.ok(types.isModuleNamespaceObject(m.namespace));
+// })();
