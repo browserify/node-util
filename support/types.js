@@ -176,3 +176,16 @@ exports.isBigIntObject = function(value) {
     return false;
   }
 }
+
+var symbolValue = uncurryThis(Symbol.prototype.valueOf);
+exports.isSymbolObject = function(value) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    symbolValue(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
