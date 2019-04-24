@@ -3,6 +3,8 @@
 
 'use strict';
 
+var isArgumentsObject = require('is-arguments');
+
 function uncurryThis(f) {
   return f.call.bind(f);
 }
@@ -53,216 +55,218 @@ function checkBoxedPrimitive(value, prototypeValueOf) {
 var methods = [
   {
     name: 'isArgumentsObject',
-    function: require('is-arguments'),
+    function: isArgumentsObject
   },
   {
     name: 'isArrayBufferView',
     supported: supported.ArrayBuffer,
-    function: ArrayBuffer.isView,
+    function: function isArrayBufferView(value) {
+      return ArrayBuffer.isView(value);
+    },
   },
   {
     name: 'isTypedArray',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isTypedArray(value) {
       return TypedArrayProto_toStringTag(value) !== undefined;
     }
   },
   {
     name: 'isUint8Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isUint8Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint8Array';
     }
   },
   {
     name: 'isUint8ClampedArray',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isUint8ClampedArray(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
     }
   },
   {
     name: 'isUint16Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isUint16Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint16Array';
     }
   },
   {
     name: 'isUint32Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isUint32Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint32Array';
     }
   },
   {
     name: 'isInt8Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isInt8Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Int8Array';
     }
   },
   {
     name: 'isInt16Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isInt16Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Int16Array';
     }
   },
   {
     name: 'isInt32Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isInt32Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Int32Array';
     }
   },
   {
     name: 'isFloat32Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isFloat32Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Float32Array';
     }
   },
   {
     name: 'isFloat64Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isFloat64Array(value) {
       return TypedArrayProto_toStringTag(value) === 'Float64Array';
     }
   },
   {
     name: 'isBigInt64Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isBigInt64Array(value) {
       return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
     }
   },
   {
     name: 'isBigUint64Array',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isBigUint64Array(value) {
       return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
     }
   },
   {
     name: 'isPromise',
-    function: function(value) {
+    function: function isPromise(value) {
       return ObjectToString(value) === '[object Promise]';
     }
   },
   {
     name: 'isMap',
-    function: function(value) {
+    function: function isMap(value) {
       return ObjectToString(value) === '[object Map]';
     }
   },
   {
     name: 'isSet',
-    function: function(value) {
+    function: function isSet(value) {
       return ObjectToString(value) === '[object Set]';
     }
   },
   {
     name: 'isWeakMap',
-    function: function(value) {
+    function: function isWeakMap(value) {
       return ObjectToString(value) === '[object WeakMap]';
     }
   },
   {
     name: 'isWeakSet',
-    function: function(value) {
+    function: function isWeakSet(value) {
       return ObjectToString(value) === '[object WeakSet]';
     }
   },
   {
     name: 'isArrayBuffer',
-    function: function(value) {
+    function: function isArrayBuffer(value) {
       return ObjectToString(value) === '[object ArrayBuffer]';
     }
   },
   {
     name: 'isDataView',
-    function: function(value) {
+    function: function isDataView(value) {
       return ObjectToString(value) === '[object DataView]';
     }
   },
   {
     name: 'isSharedArrayBuffer',
-    function: function(value) {
+    function: function isSharedArrayBuffer(value) {
       return ObjectToString(value) === '[object SharedArrayBuffer]';
     }
   },
   {
     name: 'isAsyncFunction',
-    function: function(value) {
+    function: function isAsyncFunction(value) {
       return ObjectToString(value) === '[object AsyncFunction]';
     }
   },
   {
     name: 'isGeneratorFunction',
-    function: function(value) {
+    function: function isGeneratorFunction(value) {
       return ObjectToString(value) === '[object GeneratorFunction]';
     }
   },
   {
     name: 'isMapIterator',
-    function: function(value) {
+    function: function isMapIterator(value) {
       return ObjectToString(value) === '[object Map Iterator]';
     }
   },
   {
     name: 'isSetIterator',
-    function: function(value) {
+    function: function isSetIterator(value) {
       return ObjectToString(value) === '[object Set Iterator]';
     }
   },
   {
     name: 'isGeneratorObject',
-    function: function(value) {
+    function: function isGeneratorObject(value) {
       return ObjectToString(value) === '[object Generator]';
     }
   },
   {
     name: 'isWebAssemblyCompiledModule',
-    function: function(value) {
+    function: function isWebAssemblyCompiledModule(value) {
       return ObjectToString(value) === '[object WebAssembly.Module]';
     }
   },
   {
     name: 'isNumberObject',
-    function: function(value) {
+    function: function isNumberObject(value) {
       return checkBoxedPrimitive(value, numberValue);
     }
   },
   {
     name: 'isStringObject',
-    function: function(value) {
+    function: function isStringObject(value) {
       return checkBoxedPrimitive(value, stringValue);
     }
   },
   {
     name: 'isBooleanObject',
-    function: function(value) {
+    function: function isBooleanObject(value) {
       return checkBoxedPrimitive(value, booleanValue);
     }
   },
   {
     name: 'isBigIntObject',
     supported: supported.BigInt,
-    function: function(value) {
+    function: function isBigIntObject(value) {
       return checkBoxedPrimitive(value, bigIntValue);
     }
   },
   {
     name: 'isSymbolObject',
     supported: supported.Symbol,
-    function: function(value) {
+    function: function isSymbolObject(value) {
       return checkBoxedPrimitive(value, symbolValue);
     }
   },
   {
     name: 'isBoxedPrimitive',
-    function: function(value) {
+    function: function isBoxedPrimitive(value) {
       return (
         exports.isNumberObject(value) ||
         exports.isStringObject(value) ||
@@ -275,7 +279,7 @@ var methods = [
   {
     name: 'isAnyArrayBuffer',
     supported: supported.Uint8Array,
-    function: function(value) {
+    function: function isAnyArrayBuffer(value) {
       return (
         exports.isArrayBuffer(value) ||
         exports.isSharedArrayBuffer(value)
