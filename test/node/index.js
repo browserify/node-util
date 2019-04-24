@@ -17,5 +17,6 @@ series([
   test(require.resolve('./inspect')),
   test(require.resolve('./log')),
   test(require.resolve('./promisify')),
-  test(require.resolve('./callbackify'))
+  test(require.resolve('./callbackify')),
+  test(require.resolve('./types'))
 ]);
