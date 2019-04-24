@@ -150,3 +150,16 @@ exports.isStringObject = function(value) {
     return false;
   }
 }
+
+var booleanValue = uncurryThis(Boolean.prototype.valueOf);
+exports.isBooleanObject = function(value) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    booleanValue(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
