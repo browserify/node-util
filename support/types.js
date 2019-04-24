@@ -189,3 +189,13 @@ exports.isSymbolObject = function(value) {
     return false;
   }
 }
+
+exports.isBoxedPrimitive = function(value) {
+  return (
+    exports.isNumberObject(value) ||
+    exports.isStringObject(value) ||
+    exports.isBooleanObject(value) ||
+    exports.isBigIntObject(value) ||
+    exports.isSymbolObject(value)
+  );
+}
