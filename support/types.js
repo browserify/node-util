@@ -59,93 +59,80 @@ var methods = [
   },
   {
     name: 'isArrayBufferView',
-    supported: supported.ArrayBuffer,
     function: function isArrayBufferView(value) {
-      return ArrayBuffer.isView(value);
+      return supported.ArrayBuffer && ArrayBuffer.isView(value);
     },
   },
   {
     name: 'isTypedArray',
-    supported: supported.Uint8Array,
     function: function isTypedArray(value) {
-      return TypedArrayProto_toStringTag(value) !== undefined;
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) !== undefined;
     }
   },
   {
     name: 'isUint8Array',
-    supported: supported.Uint8Array,
     function: function isUint8Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Uint8Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Uint8Array';
     }
   },
   {
     name: 'isUint8ClampedArray',
-    supported: supported.Uint8Array,
     function: function isUint8ClampedArray(value) {
-      return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
     }
   },
   {
     name: 'isUint16Array',
-    supported: supported.Uint8Array,
     function: function isUint16Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Uint16Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Uint16Array';
     }
   },
   {
     name: 'isUint32Array',
-    supported: supported.Uint8Array,
     function: function isUint32Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Uint32Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Uint32Array';
     }
   },
   {
     name: 'isInt8Array',
-    supported: supported.Uint8Array,
     function: function isInt8Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Int8Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Int8Array';
     }
   },
   {
     name: 'isInt16Array',
-    supported: supported.Uint8Array,
     function: function isInt16Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Int16Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Int16Array';
     }
   },
   {
     name: 'isInt32Array',
-    supported: supported.Uint8Array,
     function: function isInt32Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Int32Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Int32Array';
     }
   },
   {
     name: 'isFloat32Array',
-    supported: supported.Uint8Array,
     function: function isFloat32Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Float32Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Float32Array';
     }
   },
   {
     name: 'isFloat64Array',
-    supported: supported.Uint8Array,
     function: function isFloat64Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'Float64Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'Float64Array';
     }
   },
   {
     name: 'isBigInt64Array',
-    supported: supported.Uint8Array,
     function: function isBigInt64Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'BigInt64Array';
     }
   },
   {
     name: 'isBigUint64Array',
-    supported: supported.Uint8Array,
     function: function isBigUint64Array(value) {
-      return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
+      return supported.Uint8Array && TypedArrayProto_toStringTag(value) === 'BigUint64Array';
     }
   },
   {
@@ -252,16 +239,14 @@ var methods = [
   },
   {
     name: 'isBigIntObject',
-    supported: supported.BigInt,
     function: function isBigIntObject(value) {
-      return checkBoxedPrimitive(value, bigIntValue);
+      return supported.BigInt && checkBoxedPrimitive(value, bigIntValue);
     }
   },
   {
     name: 'isSymbolObject',
-    supported: supported.Symbol,
     function: function isSymbolObject(value) {
-      return checkBoxedPrimitive(value, symbolValue);
+      return supported.Symbol && checkBoxedPrimitive(value, symbolValue);
     }
   },
   {
@@ -271,16 +256,15 @@ var methods = [
         exports.isNumberObject(value) ||
         exports.isStringObject(value) ||
         exports.isBooleanObject(value) ||
-        (supported.BigInt && exports.isBigIntObject(value)) ||
-        (supported.Symbol && exports.isSymbolObject(value))
+        exports.isBigIntObject(value) ||
+        exports.isSymbolObject(value)
       );
     }
   },
   {
     name: 'isAnyArrayBuffer',
-    supported: supported.Uint8Array,
     function: function isAnyArrayBuffer(value) {
-      return (
+      return supported.Uint8Array && (
         exports.isArrayBuffer(value) ||
         exports.isSharedArrayBuffer(value)
       );
@@ -288,24 +272,23 @@ var methods = [
   },
   {
     name: 'isProxy',
-    supported: false
+    disabled: true
   },
   {
     name: 'isExternal',
-    supported: false
+    disabled: true
   },
   {
     name: 'isModuleNamespaceObject',
-    supported: false
+    disabled: true
   },
 ];
 
 methods.forEach(function(method) {
-  const supported = method.supported !== false;
   Object.defineProperty(exports, method.name, {
-    enumerable: supported,
-    value: supported ? method.function : function() {
-      throw new Error(method.name + ' is not supported');
+    enumerable: !method.disabled,
+    value: !method.disabled ? method.function : function() {
+      throw new Error(method.name + ' is not supported in userland');
     }
   });
 });
