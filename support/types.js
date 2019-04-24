@@ -122,6 +122,10 @@ exports.isGeneratorObject = function(value) {
   return ObjectToString(value) === '[object Generator]';
 };
 
+exports.isWebAssemblyCompiledModule = function(value) {
+  return ObjectToString(value) === '[object WebAssembly.Module]';
+};
+
 exports.isAnyArrayBuffer = function(value) {
   return (
     exports.isArrayBuffer(value) ||
