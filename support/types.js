@@ -208,4 +208,25 @@ exports.isBoxedPrimitive = function(value) {
   );
 };
 
+Object.defineProperty(exports, 'isProxy', {
+  enumerable: false,
+  value: function() {
+    throw new Error('Proxies can not be detected in userland');
+  },
+});
+
+Object.defineProperty(exports, 'isExternal', {
+  enumerable: false,
+  value: function() {
+    throw new Error('External values can not be detected in userland');
+  },
+});
+
+Object.defineProperty(exports, 'isModuleNamespaceObject', {
+  enumerable: false,
+  value: function() {
+    throw new Error('Module namespace objects are not supported');
+  },
+});
+
 exports.isArgumentsObject = require('is-arguments');
