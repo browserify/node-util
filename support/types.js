@@ -7,20 +7,36 @@ function uncurryThis(f) {
   return f.call.bind(f);
 }
 
-var TypedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
+var supported = {
+  BigInt: typeof BigInt !== 'undefined',
+  Symbol: typeof Symbol !== 'undefined',
+  Uint8Array: typeof Uint8Array !== 'undefined',
+  ArrayBuffer: typeof ArrayBuffer !== 'undefined'
+};
 
-var TypedArrayProto_toStringTag =
-    uncurryThis(
-      Object.getOwnPropertyDescriptor(TypedArrayPrototype,
-                                      Symbol.toStringTag).get);
+if (supported.Uint8Array) {
+  var TypedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
+
+  var TypedArrayProto_toStringTag =
+      uncurryThis(
+        Object.getOwnPropertyDescriptor(TypedArrayPrototype,
+                                        Symbol.toStringTag).get);
+
+}
 
 var ObjectToString = uncurryThis(Object.prototype.toString);
 
 var numberValue = uncurryThis(Number.prototype.valueOf);
 var stringValue = uncurryThis(String.prototype.valueOf);
 var booleanValue = uncurryThis(Boolean.prototype.valueOf);
-var bigIntValue = uncurryThis(BigInt.prototype.valueOf);
-var symbolValue = uncurryThis(Symbol.prototype.valueOf);
+
+if (supported.BigInt) {
+  var bigIntValue = uncurryThis(BigInt.prototype.valueOf);
+}
+
+if (supported.Symbol) {
+  var symbolValue = uncurryThis(Symbol.prototype.valueOf);
+}
 
 function checkBoxedPrimitive(value, prototypeValueOf) {
   if (typeof value !== 'object') {
@@ -36,77 +52,94 @@ function checkBoxedPrimitive(value, prototypeValueOf) {
 
 var methods = [
   {
+    name: 'isArgumentsObject',
+    function: require('is-arguments'),
+  },
+  {
     name: 'isArrayBufferView',
+    supported: supported.ArrayBuffer,
     function: ArrayBuffer.isView,
   },
   {
     name: 'isTypedArray',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) !== undefined;
     }
   },
   {
     name: 'isUint8Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint8Array';
     }
   },
   {
     name: 'isUint8ClampedArray',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
     }
   },
   {
     name: 'isUint16Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint16Array';
     }
   },
   {
     name: 'isUint32Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Uint32Array';
     }
   },
   {
     name: 'isInt8Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Int8Array';
     }
   },
   {
     name: 'isInt16Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Int16Array';
     }
   },
   {
     name: 'isInt32Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Int32Array';
     }
   },
   {
     name: 'isFloat32Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Float32Array';
     }
   },
   {
     name: 'isFloat64Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'Float64Array';
     }
   },
   {
     name: 'isBigInt64Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
     }
   },
   {
     name: 'isBigUint64Array',
+    supported: supported.Uint8Array,
     function: function(value) {
       return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
     }
@@ -151,12 +184,6 @@ var methods = [
     name: 'isDataView',
     function: function(value) {
       return ObjectToString(value) === '[object DataView]';
-    }
-  },
-  {
-    name: 'isArrayBuffer',
-    function: function(value) {
-      return ObjectToString(value) === '[object ArrayBuffer]';
     }
   },
   {
@@ -221,12 +248,14 @@ var methods = [
   },
   {
     name: 'isBigIntObject',
+    supported: supported.BigInt,
     function: function(value) {
       return checkBoxedPrimitive(value, bigIntValue);
     }
   },
   {
     name: 'isSymbolObject',
+    supported: supported.Symbol,
     function: function(value) {
       return checkBoxedPrimitive(value, symbolValue);
     }
@@ -238,45 +267,41 @@ var methods = [
         exports.isNumberObject(value) ||
         exports.isStringObject(value) ||
         exports.isBooleanObject(value) ||
-        exports.isBigIntObject(value) ||
-        exports.isSymbolObject(value)
+        (supported.BigInt && exports.isBigIntObject(value)) ||
+        (supported.Symbol && exports.isSymbolObject(value))
       );
     }
   },
   {
     name: 'isAnyArrayBuffer',
+    supported: supported.Uint8Array,
     function: function(value) {
       return (
         exports.isArrayBuffer(value) ||
         exports.isSharedArrayBuffer(value)
       );
     }
-  }
+  },
+  {
+    name: 'isProxy',
+    supported: false
+  },
+  {
+    name: 'isExternal',
+    supported: false
+  },
+  {
+    name: 'isModuleNamespaceObject',
+    supported: false
+  },
 ];
 
 methods.forEach(function(method) {
-  exports[method.name] = method.function;
+  const supported = method.supported !== false;
+  Object.defineProperty(exports, method.name, {
+    enumerable: supported,
+    value: supported ? method.function : function() {
+      throw new Error(method.name + ' is not supported');
+    }
+  });
 });
-
-Object.defineProperty(exports, 'isProxy', {
-  enumerable: false,
-  value: function() {
-    throw new Error('Proxies can not be detected in userland');
-  },
-});
-
-Object.defineProperty(exports, 'isExternal', {
-  enumerable: false,
-  value: function() {
-    throw new Error('External values can not be detected in userland');
-  },
-});
-
-Object.defineProperty(exports, 'isModuleNamespaceObject', {
-  enumerable: false,
-  value: function() {
-    throw new Error('Module namespace objects are not supported');
-  },
-});
-
-exports.isArgumentsObject = require('is-arguments');
