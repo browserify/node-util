@@ -34,7 +34,7 @@ for (const [ getValue, _method ] of [
   [ function() { return Object(BigInt(0)); }, 'isBigIntObject' ],
   [ function() { return new Error(); }, 'isNativeError' ],
   [ function() { return new RegExp(); } ],
-  [ function() { return async function() {}; }, 'isAsyncFunction' ],
+  [ function() { return eval('(async function() {})'); }, 'isAsyncFunction' ],
   [ function() { return function*() {}; }, 'isGeneratorFunction' ],
   [ function() { return (function*() {})(); }, 'isGeneratorObject' ],
   [ function() { return Promise.resolve(); } ],
