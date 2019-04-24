@@ -92,12 +92,20 @@ for (const [ getValue, _method ] of [
 // Check boxed primitives.
 console.log('Testing', 'isBoxedPrimitive');
 [
-  new Boolean(),
-  new Number(),
-  new String(),
-  Object(Symbol()),
-  Object(BigInt(0))
-].forEach((entry) => assert(types.isBoxedPrimitive(entry)));
+  function() { return new Boolean(); },
+  function() { return new Number(); },
+  function() { return new String(); },
+  function() { return Object(Symbol()); },
+  function() { return Object(BigInt(0)); }
+].forEach((getEntry) => {
+  let entry;
+  try {
+    entry = getEntry();
+  } catch (e) {
+    return;
+  }
+  assert(types.isBoxedPrimitive(entry))
+});
 
 {
   assert(!types.isUint8Array({ [Symbol.toStringTag]: 'Uint8Array' }));
