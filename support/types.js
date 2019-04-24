@@ -163,3 +163,16 @@ exports.isBooleanObject = function(value) {
     return false;
   }
 }
+
+var bigIntValue = uncurryThis(BigInt.prototype.valueOf);
+exports.isBigIntObject = function(value) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    bigIntValue(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
