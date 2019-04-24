@@ -118,6 +118,10 @@ exports.isSetIterator = function(value) {
   return ObjectToString(value) === '[object Set Iterator]';
 };
 
+exports.isGeneratorObject = function(value) {
+  return ObjectToString(value) === '[object Generator]';
+};
+
 exports.isAnyArrayBuffer = function(value) {
   return (
     exports.isArrayBuffer(value) ||
