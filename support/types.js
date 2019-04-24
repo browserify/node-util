@@ -124,3 +124,16 @@ exports.isAnyArrayBuffer = function(value) {
     exports.isSharedArrayBuffer(value)
   );
 }
+
+var numberValue = uncurryThis(Number.prototype.valueOf);
+exports.isNumberObject = function(value) {
+  if (typeof value !== 'object') {
+    return false;
+  }
+  try {
+    numberValue(value);
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
