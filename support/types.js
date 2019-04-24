@@ -114,8 +114,8 @@ exports.isMapIterator = function(value) {
   return ObjectToString(value) === '[object Map Iterator]';
 }
 
-exports.isMapIterator = function(value) {
-  return ObjectToString(value) === '[object Map Iterator]';
+exports.isSetIterator = function(value) {
+  return ObjectToString(value) === '[object Set Iterator]';
 }
 
 exports.isAnyArrayBuffer = function(value) {
