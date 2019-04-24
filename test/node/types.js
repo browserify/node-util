@@ -65,6 +65,7 @@ for (const [ value, _method ] of [
   [ new WebAssembly.Module(wasmBuffer), 'isWebAssemblyCompiledModule' ],
 ]) {
   const method = _method || `is${value.constructor.name}`;
+  console.log('Testing', method);
   assert(method in types, `Missing ${method} for ${inspect(value)}`);
   assert(types[method](value), `Want ${inspect(value)} to match ${method}`);
 
@@ -83,6 +84,7 @@ for (const [ value, _method ] of [
 }
 
 // Check boxed primitives.
+console.log('Testing', 'isBoxedPrimitive');
 [
   new Boolean(),
   new Number(),
