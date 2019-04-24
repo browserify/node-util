@@ -5,8 +5,16 @@
 'use strict';
 require('./common');
 const assert = require('assert');
-const { types, inspect } = require('util');
+const { types } = require('../../');
 const vm = require('vm');
+
+const inspect = value => {
+  try {
+    return JSON.stringify(value);
+  } catch (e) {
+    return `${typeof value}: ${value}`;
+  }
+};
 
 // [browserify] We can't test this in userland
 // const { internalBinding } = require('internal/test/binding');
@@ -24,7 +32,7 @@ for (const [ value, _method ] of [
   [ new String(), 'isStringObject' ],
   [ Object(Symbol()), 'isSymbolObject' ],
   [ Object(BigInt(0)), 'isBigIntObject' ],
-  [ new Error(), 'isNativeError' ],
+  // [ new Error(), 'isNativeError' ],
   [ new RegExp() ],
   [ async function() {}, 'isAsyncFunction' ],
   [ function*() {}, 'isGeneratorFunction' ],
@@ -53,7 +61,7 @@ for (const [ value, _method ] of [
                           { value: 'foo' }) ],
   [ new DataView(new ArrayBuffer()) ],
   [ new SharedArrayBuffer() ],
-  [ new Proxy({}, {}), 'isProxy' ],
+  // [ new Proxy({}, {}), 'isProxy' ],
   [ new WebAssembly.Module(wasmBuffer), 'isWebAssemblyCompiledModule' ],
 ]) {
   const method = _method || `is${value.constructor.name}`;
