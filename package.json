@@ -24,7 +24,8 @@
     "test:browsers": "airtap test/browser/index.js"
   },
   "dependencies": {
-    "inherits": "2.0.3"
+    "inherits": "2.0.3",
+    "is-arguments": "^1.0.4"
   },
   "license": "MIT",
   "devDependencies": {

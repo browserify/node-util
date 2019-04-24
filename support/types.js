@@ -199,3 +199,5 @@ exports.isBoxedPrimitive = function(value) {
     exports.isSymbolObject(value)
   );
 };
+
+exports.isArgumentsObject = require('is-arguments');
