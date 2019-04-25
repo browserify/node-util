@@ -58,9 +58,14 @@ for (const [ getValue, _method ] of [
   [ function() { return new Float64Array(); } ],
   [ function() { return new BigInt64Array(); } ],
   [ function() { return new BigUint64Array(); } ],
-  [ function() { return Object.defineProperty(new Uint8Array(),
-                          Symbol.toStringTag,
-                          { value: 'foo' }); } ],
+  [ function() {
+    if (typeof Symbol === 'undefined' || typeof Symbol.toStringTag === 'undefined') {
+      throw Error();
+    }
+    return Object.defineProperty(new Uint8Array(),
+                                  Symbol.toStringTag,
+                                  { value: 'foo' });
+  } ],
   [ function() { return new DataView(new ArrayBuffer()); } ],
   [ function() { return new SharedArrayBuffer(); } ],
   // [ new Proxy({}, {}), 'isProxy' ],
