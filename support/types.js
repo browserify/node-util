@@ -51,291 +51,243 @@ function checkBoxedPrimitive(value, prototypeValueOf) {
   }
 }
 
-var methods = [
-  {
-    name: 'isArgumentsObject',
-    function: isArgumentsObject
-  },
-  {
-    name: 'isArrayBufferView',
-    function: function isArrayBufferView(value) {
-      return ArrayBufferSupported && ArrayBuffer.isView(value);
-    },
-  },
-  {
-    name: 'isTypedArray',
-    function: function isTypedArray(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) !== undefined;
-      } else {
-        return ObjectToString(value) === '[object TypedArray]';
-      }
-    }
-  },
-  {
-    name: 'isUint8Array',
-    function: function isUint8Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Uint8Array';
-      } else {
-        return ObjectToString(value) === '[object Uint8Array]';
-      }
-    }
-  },
-  {
-    name: 'isUint8ClampedArray',
-    function: function isUint8ClampedArray(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
-      } else {
-        return ObjectToString(value) === '[object Uint8ClampedArray]';
-      }
-    }
-  },
-  {
-    name: 'isUint16Array',
-    function: function isUint16Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Uint16Array';
-      } else {
-        return ObjectToString(value) === '[object Uint16Array]';
-      }
-    }
-  },
-  {
-    name: 'isUint32Array',
-    function: function isUint32Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Uint32Array';
-      } else {
-        return ObjectToString(value) === '[object Uint32Array]';
-      }
-    }
-  },
-  {
-    name: 'isInt8Array',
-    function: function isInt8Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Int8Array';
-      } else {
-        return ObjectToString(value) === '[object Int8Array]';
-      }
-    }
-  },
-  {
-    name: 'isInt16Array',
-    function: function isInt16Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Int16Array';
-      } else {
-        return ObjectToString(value) === '[object Int16Array]';
-      }
-    }
-  },
-  {
-    name: 'isInt32Array',
-    function: function isInt32Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Int32Array';
-      } else {
-        return ObjectToString(value) === '[object Int32Array]';
-      }
-    }
-  },
-  {
-    name: 'isFloat32Array',
-    function: function isFloat32Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Float32Array';
-      } else {
-        return ObjectToString(value) === '[object Float32Array]';
-      }
-    }
-  },
-  {
-    name: 'isFloat64Array',
-    function: function isFloat64Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'Float64Array';
-      } else {
-        return ObjectToString(value) === '[object Float64Array]';
-      }
-    }
-  },
-  {
-    name: 'isBigInt64Array',
-    function: function isBigInt64Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
-      } else {
-        return ObjectToString(value) === '[object BigInt64Array]';
-      }
-    }
-  },
-  {
-    name: 'isBigUint64Array',
-    function: function isBigUint64Array(value) {
-      if (Uint8ArraySupported && SymbolToStringTagSupported) {
-        return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
-      } else {
-        return ObjectToString(value) === '[object BigUint64Array]';
-      }
-    }
-  },
-  {
-    name: 'isPromise',
-    function: function isPromise(value) {
-      return ObjectToString(value) === '[object Promise]';
-    }
-  },
-  {
-    name: 'isMap',
-    function: function isMap(value) {
-      return ObjectToString(value) === '[object Map]';
-    }
-  },
-  {
-    name: 'isSet',
-    function: function isSet(value) {
-      return ObjectToString(value) === '[object Set]';
-    }
-  },
-  {
-    name: 'isWeakMap',
-    function: function isWeakMap(value) {
-      return ObjectToString(value) === '[object WeakMap]';
-    }
-  },
-  {
-    name: 'isWeakSet',
-    function: function isWeakSet(value) {
-      return ObjectToString(value) === '[object WeakSet]';
-    }
-  },
-  {
-    name: 'isArrayBuffer',
-    function: function isArrayBuffer(value) {
-      return ObjectToString(value) === '[object ArrayBuffer]';
-    }
-  },
-  {
-    name: 'isDataView',
-    function: function isDataView(value) {
-      return ObjectToString(value) === '[object DataView]';
-    }
-  },
-  {
-    name: 'isSharedArrayBuffer',
-    function: function isSharedArrayBuffer(value) {
-      return ObjectToString(value) === '[object SharedArrayBuffer]';
-    }
-  },
-  {
-    name: 'isAsyncFunction',
-    function: function isAsyncFunction(value) {
-      return ObjectToString(value) === '[object AsyncFunction]';
-    }
-  },
-  {
-    name: 'isGeneratorFunction',
-    function: function isGeneratorFunction(value) {
-      return ObjectToString(value) === '[object GeneratorFunction]';
-    }
-  },
-  {
-    name: 'isMapIterator',
-    function: function isMapIterator(value) {
-      return ObjectToString(value) === '[object Map Iterator]';
-    }
-  },
-  {
-    name: 'isSetIterator',
-    function: function isSetIterator(value) {
-      return ObjectToString(value) === '[object Set Iterator]';
-    }
-  },
-  {
-    name: 'isGeneratorObject',
-    function: function isGeneratorObject(value) {
-      return ObjectToString(value) === '[object Generator]';
-    }
-  },
-  {
-    name: 'isWebAssemblyCompiledModule',
-    function: function isWebAssemblyCompiledModule(value) {
-      return ObjectToString(value) === '[object WebAssembly.Module]';
-    }
-  },
-  {
-    name: 'isNumberObject',
-    function: function isNumberObject(value) {
-      return checkBoxedPrimitive(value, numberValue);
-    }
-  },
-  {
-    name: 'isStringObject',
-    function: function isStringObject(value) {
-      return checkBoxedPrimitive(value, stringValue);
-    }
-  },
-  {
-    name: 'isBooleanObject',
-    function: function isBooleanObject(value) {
-      return checkBoxedPrimitive(value, booleanValue);
-    }
-  },
-  {
-    name: 'isBigIntObject',
-    function: function isBigIntObject(value) {
-      return BigIntSupported && checkBoxedPrimitive(value, bigIntValue);
-    }
-  },
-  {
-    name: 'isSymbolObject',
-    function: function isSymbolObject(value) {
-      return SymbolSupported && checkBoxedPrimitive(value, symbolValue);
-    }
-  },
-  {
-    name: 'isBoxedPrimitive',
-    function: function isBoxedPrimitive(value) {
-      return (
-        exports.isNumberObject(value) ||
-        exports.isStringObject(value) ||
-        exports.isBooleanObject(value) ||
-        exports.isBigIntObject(value) ||
-        exports.isSymbolObject(value)
-      );
-    }
-  },
-  {
-    name: 'isAnyArrayBuffer',
-    function: function isAnyArrayBuffer(value) {
-      return Uint8ArraySupported && (
-        exports.isArrayBuffer(value) ||
-        exports.isSharedArrayBuffer(value)
-      );
-    }
-  },
-  {
-    name: 'isProxy',
-    disabled: true
-  },
-  {
-    name: 'isExternal',
-    disabled: true
-  },
-  {
-    name: 'isModuleNamespaceObject',
-    disabled: true
-  },
-];
+function isArgumentsObject(value) {
+  return isArguments(value);
+}
+exports.isArgumentsObject = isArgumentsObject;
 
-methods.forEach(function(method) {
-  Object.defineProperty(exports, method.name, {
-    enumerable: !method.disabled,
-    value: !method.disabled ? method.function : function() {
-      throw new Error(method.name + ' is not supported in userland');
+function isArrayBufferView(value) {
+  return ArrayBufferSupported && ArrayBuffer.isView(value);
+}
+exports.isArrayBufferView = isArrayBufferView;
+
+function isTypedArray(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) !== undefined;
+  } else {
+    return ObjectToString(value) === '[object TypedArray]';
+  }
+}
+exports.isTypedArray = isTypedArray;
+
+function isUint8Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Uint8Array';
+  } else {
+    return ObjectToString(value) === '[object Uint8Array]';
+  }
+}
+exports.isUint8Array = isUint8Array;
+
+function isUint8ClampedArray(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Uint8ClampedArray';
+  } else {
+    return ObjectToString(value) === '[object Uint8ClampedArray]';
+  }
+}
+exports.isUint8ClampedArray = isUint8ClampedArray;
+
+function isUint16Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Uint16Array';
+  } else {
+    return ObjectToString(value) === '[object Uint16Array]';
+  }
+}
+exports.isUint16Array = isUint16Array;
+
+function isUint32Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Uint32Array';
+  } else {
+    return ObjectToString(value) === '[object Uint32Array]';
+  }
+}
+exports.isUint32Array = isUint32Array;
+
+function isInt8Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Int8Array';
+  } else {
+    return ObjectToString(value) === '[object Int8Array]';
+  }
+}
+exports.isInt8Array = isInt8Array;
+
+function isInt16Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Int16Array';
+  } else {
+    return ObjectToString(value) === '[object Int16Array]';
+  }
+}
+exports.isInt16Array = isInt16Array;
+
+function isInt32Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Int32Array';
+  } else {
+    return ObjectToString(value) === '[object Int32Array]';
+  }
+}
+exports.isInt32Array = isInt32Array;
+
+function isFloat32Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Float32Array';
+  } else {
+    return ObjectToString(value) === '[object Float32Array]';
+  }
+}
+exports.isFloat32Array = isFloat32Array;
+
+function isFloat64Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'Float64Array';
+  } else {
+    return ObjectToString(value) === '[object Float64Array]';
+  }
+}
+exports.isFloat64Array = isFloat64Array;
+
+function isBigInt64Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'BigInt64Array';
+  } else {
+    return ObjectToString(value) === '[object BigInt64Array]';
+  }
+}
+exports.isBigInt64Array = isBigInt64Array;
+
+function isBigUint64Array(value) {
+  if (Uint8ArraySupported && SymbolToStringTagSupported) {
+    return TypedArrayProto_toStringTag(value) === 'BigUint64Array';
+  } else {
+    return ObjectToString(value) === '[object BigUint64Array]';
+  }
+}
+exports.isBigUint64Array = isBigUint64Array;
+
+function isPromise(value) {
+  return ObjectToString(value) === '[object Promise]';
+}
+exports.isPromise = isPromise;
+
+function isMap(value) {
+  return ObjectToString(value) === '[object Map]';
+}
+exports.isMap = isMap;
+
+function isSet(value) {
+  return ObjectToString(value) === '[object Set]';
+}
+exports.isSet = isSet;
+
+function isWeakMap(value) {
+  return ObjectToString(value) === '[object WeakMap]';
+}
+exports.isWeakMap = isWeakMap;
+
+function isWeakSet(value) {
+  return ObjectToString(value) === '[object WeakSet]';
+}
+exports.isWeakSet = isWeakSet;
+
+function isArrayBuffer(value) {
+  return ObjectToString(value) === '[object ArrayBuffer]';
+}
+exports.isArrayBuffer = isArrayBuffer;
+
+function isDataView(value) {
+  return ObjectToString(value) === '[object DataView]';
+}
+exports.isDataView = isDataView;
+
+function isSharedArrayBuffer(value) {
+  return ObjectToString(value) === '[object SharedArrayBuffer]';
+}
+exports.isSharedArrayBuffer = isSharedArrayBuffer;
+
+function isAsyncFunction(value) {
+  return ObjectToString(value) === '[object AsyncFunction]';
+}
+exports.isAsyncFunction = isAsyncFunction;
+
+function isGeneratorFunction(value) {
+  return ObjectToString(value) === '[object GeneratorFunction]';
+}
+exports.isGeneratorFunction = isGeneratorFunction;
+
+function isMapIterator(value) {
+  return ObjectToString(value) === '[object Map Iterator]';
+}
+exports.isMapIterator = isMapIterator;
+
+function isSetIterator(value) {
+  return ObjectToString(value) === '[object Set Iterator]';
+}
+exports.isSetIterator = isSetIterator;
+
+function isGeneratorObject(value) {
+  return ObjectToString(value) === '[object Generator]';
+}
+exports.isGeneratorObject = isGeneratorObject;
+
+function isWebAssemblyCompiledModule(value) {
+  return ObjectToString(value) === '[object WebAssembly.Module]';
+}
+exports.isWebAssemblyCompiledModule = isWebAssemblyCompiledModule;
+
+function isNumberObject(value) {
+  return checkBoxedPrimitive(value, numberValue);
+}
+exports.isNumberObject = isNumberObject;
+
+function isStringObject(value) {
+  return checkBoxedPrimitive(value, stringValue);
+}
+exports.isStringObject = isStringObject;
+
+function isBooleanObject(value) {
+  return checkBoxedPrimitive(value, booleanValue);
+}
+exports.isBooleanObject = isBooleanObject;
+
+function isBigIntObject(value) {
+  return BigIntSupported && checkBoxedPrimitive(value, bigIntValue);
+}
+exports.isBigIntObject = isBigIntObject;
+
+function isSymbolObject(value) {
+  return SymbolSupported && checkBoxedPrimitive(value, symbolValue);
+}
+exports.isSymbolObject = isSymbolObject;
+
+function isBoxedPrimitive(value) {
+  return (
+    isNumberObject(value) ||
+    isStringObject(value) ||
+    isBooleanObject(value) ||
+    isBigIntObject(value) ||
+    isSymbolObject(value)
+  );
+}
+exports.isBoxedPrimitive = isBoxedPrimitive;
+
+function isAnyArrayBuffer(value) {
+  return Uint8ArraySupported && (
+    isArrayBuffer(value) ||
+    isSharedArrayBuffer(value)
+  );
+}
+exports.isAnyArrayBuffer = isAnyArrayBuffer;
+
+['isProxy', 'isExternal', 'isModuleNamespaceObject'].forEach(function(method) {
+  Object.defineProperty(exports, method, {
+    enumerable: false,
+    value: function() {
+      throw new Error(method + ' is not supported in userland');
     }
   });
 });
