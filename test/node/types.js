@@ -75,6 +75,7 @@ for (const [ getValue, _method ] of [
   try {
     value = getValue();
   } catch (e) {
+    console.log('Skipping unsupported type:', getValue);
     continue;
   }
   const method = _method || `is${value.constructor.name}`;
