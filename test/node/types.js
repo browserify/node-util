@@ -8,6 +8,8 @@ const assert = require('assert');
 const { types } = require('../../');
 const vm = require('vm');
 
+const objectEntries = require('object.entries');
+
 const inspect = value => {
   try {
     return JSON.stringify(value);
@@ -200,7 +202,7 @@ console.log('Testing', 'isBoxedPrimitive');
       new BigUint64Array(arrayBuffer()), BigUint64Array.prototype
     );
 
-  const typedArrays = Object.entries({
+  const typedArrays = objectEntries({
     primitive, arrayBuffer, buffer, fakeBuffer,
     dataView, fakeDataView, stealthyDataView,
     uint8Array, fakeUint8Array, stealthyUint8Array,

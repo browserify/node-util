@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "inherits": "2.0.3",
-    "is-arguments": "^1.0.4"
+    "is-arguments": "^1.0.4",
+    "object.entries": "^1.1.0"
   },
   "license": "MIT",
   "devDependencies": {
