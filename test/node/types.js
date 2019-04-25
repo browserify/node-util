@@ -10,11 +10,17 @@ const vm = require('vm');
 
 const objectEntries = require('object.entries');
 
+function uncurryThis(f) {
+  return f.call.bind(f);
+}
+
+const ObjectToString = uncurryThis(Object.prototype.toString);
+
 const inspect = value => {
   try {
     return JSON.stringify(value);
   } catch (e) {
-    return `${typeof value}: ${value}`;
+    return ObjectToString(value);
   }
 };
 
