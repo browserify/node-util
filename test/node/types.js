@@ -475,7 +475,7 @@ console.log('Testing', 'isBoxedPrimitive');
   for (var _i2 = 0, _Object$keys = Object.keys(expected); _i2 < _Object$keys.length; _i2++) {
     var testedFunc = _Object$keys[_i2];
 
-    console.log('Testing', testedFunc);
+    console.log('Testing values for:', testedFunc);
     var func = types[testedFunc];
     var yup = [];
     var _iteratorNormalCompletion = true;
