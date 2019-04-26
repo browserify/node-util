@@ -4,6 +4,7 @@
 'use strict';
 
 var isArgumentsObject = require('is-arguments');
+var isGeneratorFunction = require('is-generator-function');
 
 function uncurryThis(f) {
   return f.call.bind(f);
@@ -55,6 +56,8 @@ function isArgumentsObject(value) {
   return isArguments(value);
 }
 exports.isArgumentsObject = isArgumentsObject;
+
+exports.isGeneratorFunction = isGeneratorFunction;
 
 function isArrayBufferView(value) {
   return ArrayBufferSupported && ArrayBuffer.isView(value);
@@ -213,11 +216,6 @@ function isAsyncFunction(value) {
   return ObjectToString(value) === '[object AsyncFunction]';
 }
 exports.isAsyncFunction = isAsyncFunction;
-
-function isGeneratorFunction(value) {
-  return ObjectToString(value) === '[object GeneratorFunction]';
-}
-exports.isGeneratorFunction = isGeneratorFunction;
 
 function isMapIterator(value) {
   return ObjectToString(value) === '[object Map Iterator]';
