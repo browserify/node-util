@@ -5,6 +5,7 @@
 
 var isArgumentsObject = require('is-arguments');
 var isGeneratorFunction = require('is-generator-function');
+var isPromise = require('is-promise');
 
 function uncurryThis(f) {
   return f.call.bind(f);
@@ -55,6 +56,8 @@ function checkBoxedPrimitive(value, prototypeValueOf) {
 exports.isArgumentsObject = isArgumentsObject;
 
 exports.isGeneratorFunction = isGeneratorFunction;
+
+exports.isPromise = isPromise;
 
 function isArrayBufferView(value) {
   return ArrayBufferSupported && ArrayBuffer.isView(value);
@@ -168,11 +171,6 @@ function isBigUint64Array(value) {
   }
 }
 exports.isBigUint64Array = isBigUint64Array;
-
-function isPromise(value) {
-  return ObjectToString(value) === '[object Promise]';
-}
-exports.isPromise = isPromise;
 
 function isMap(value) {
   return ObjectToString(value) === '[object Map]';
