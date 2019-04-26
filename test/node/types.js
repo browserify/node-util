@@ -119,17 +119,13 @@ for (var _i = 0, _arr = [
 
 // Check boxed primitives.
 console.log('Testing', 'isBoxedPrimitive');
-[function () {
-  return new Boolean();
-}, function () {
-  return new Number();
-}, function () {
-  return new String();
-}, function () {
-  return Object(Symbol());
-}, function () {
-  return Object(BigInt(0));
-}].forEach(function (getEntry) {
+[
+  function () { return new Boolean(); },
+  function () { return new Number(); },
+  function () { return new String(); },
+  function () { return Object(Symbol()); },
+  function () { return Object(BigInt(0)); }
+].forEach(function (getEntry) {
   var entry;
   try {
     entry = getEntry();
