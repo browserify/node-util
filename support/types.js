@@ -68,7 +68,19 @@ function isTypedArray(value) {
   if (Uint8ArraySupported && SymbolToStringTagSupported) {
     return TypedArrayProto_toStringTag(value) !== undefined;
   } else {
-    return ObjectToString(value) === '[object TypedArray]';
+    return (
+      isUint8Array(value) ||
+      isUint8ClampedArray(value) ||
+      isUint16Array(value) ||
+      isUint32Array(value) ||
+      isInt8Array(value) ||
+      isInt16Array(value) ||
+      isInt32Array(value) ||
+      isFloat32Array(value) ||
+      isFloat64Array(value) ||
+      isBigInt64Array(value) ||
+      isBigUint64Array(value)
+    );
   }
 }
 exports.isTypedArray = isTypedArray;
