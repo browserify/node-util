@@ -160,7 +160,7 @@ console.log('Testing', 'isBoxedPrimitive');
   } catch (e) {
     return;
   }
-  console.log('Testing', method);
+  console.log('Testing fake typed arrays', method);
   assert(!types[method](_defineProperty({}, Symbol.toStringTag, typedArray)));
   assert(types[method](array));
 });
