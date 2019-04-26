@@ -52,9 +52,6 @@ function checkBoxedPrimitive(value, prototypeValueOf) {
   }
 }
 
-function isArgumentsObject(value) {
-  return isArguments(value);
-}
 exports.isArgumentsObject = isArgumentsObject;
 
 exports.isGeneratorFunction = isGeneratorFunction;
