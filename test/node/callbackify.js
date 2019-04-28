@@ -8,6 +8,11 @@ var assert = require('assert');
 var callbackify = require('../../').callbackify;
 var execFile = require('child_process').execFile;
 
+if (typeof Promise === 'undefined') {
+  console.log('no global Promise found, skipping callbackify tests');
+  return;
+}
+
 var values = [
   'hello world',
   null,
