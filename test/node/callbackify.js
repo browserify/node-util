@@ -72,7 +72,7 @@ if (typeof Symbol !== 'undefined') {
           assert.strictEqual(err.message, 'Promise was rejected with a falsy value');
           assert.strictEqual(err.reason, value);
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(String(value).slice(-err.message.length), err.message);
         }
       } else {
         assert.strictEqual(err, value);
@@ -97,7 +97,7 @@ if (typeof Symbol !== 'undefined') {
           assert.strictEqual(err.message, 'Promise was rejected with a falsy value');
           assert.strictEqual(err.reason, value);
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(String(value).slice(-err.message.length), err.message);
         }
       } else {
         assert.strictEqual(err, value);
