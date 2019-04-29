@@ -187,7 +187,10 @@ exports.isBigUint64Array = isBigUint64Array;
 function isMapToString(value) {
   return ObjectToString(value) === '[object Map]';
 }
-isMapToString.working = typeof Map !== 'undefined' && isMapToString(new Map());
+isMapToString.working = (
+  typeof Map !== 'undefined' &&
+  isMapToString(new Map())
+);
 
 function isMap(value) {
   if (typeof Map === 'undefined') {
@@ -203,7 +206,10 @@ exports.isMap = isMap;
 function isSetToString(value) {
   return ObjectToString(value) === '[object Set]';
 }
-isSetToString.working = typeof Set !== 'undefined' && isSetToString(new Set());
+isSetToString.working = (
+  typeof Set !== 'undefined' &&
+  isSetToString(new Set())
+);
 function isSet(value) {
   if (typeof Set === 'undefined') {
     return false;
@@ -218,7 +224,10 @@ exports.isSet = isSet;
 function isWeakMapToString(value) {
   return ObjectToString(value) === '[object WeakMap]';
 }
-isWeakMapToString.working = typeof WeakMap !== 'undefined' && isWeakMapToString(new WeakMap());
+isWeakMapToString.working = (
+  typeof WeakMap !== 'undefined' &&
+  isWeakMapToString(new WeakMap())
+);
 function isWeakMap(value) {
   if (typeof WeakMap === 'undefined') {
     return false;
@@ -233,7 +242,10 @@ exports.isWeakMap = isWeakMap;
 function isWeakSetToString(value) {
   return ObjectToString(value) === '[object WeakSet]';
 }
-isWeakSetToString.working = typeof WeakSet !== 'undefined' && isWeakSetToString(new WeakSet());
+isWeakSetToString.working = (
+  typeof WeakSet !== 'undefined' &&
+  isWeakSetToString(new WeakSet())
+);
 function isWeakSet(value) {
   return isWeakSetToString(value);
   if (typeof WeakSet === 'undefined') {
@@ -249,7 +261,10 @@ exports.isWeakSet = isWeakSet;
 function isArrayBufferToString(value) {
   return ObjectToString(value) === '[object ArrayBuffer]';
 }
-isArrayBufferToString.working = typeof ArrayBuffer !== 'undefined' && isArrayBufferToString(new ArrayBuffer());
+isArrayBufferToString.working = (
+  typeof ArrayBuffer !== 'undefined' &&
+  isArrayBufferToString(new ArrayBuffer())
+);
 function isArrayBuffer(value) {
   if (typeof ArrayBuffer === 'undefined') {
     return false;
@@ -264,7 +279,11 @@ exports.isArrayBuffer = isArrayBuffer;
 function isDataViewToString(value) {
   return ObjectToString(value) === '[object DataView]';
 }
-isDataViewToString.working = typeof ArrayBuffer !== 'undefined' && typeof DataView !== 'undefined' && isDataViewToString(new DataView(new ArrayBuffer()));
+isDataViewToString.working = (
+  typeof ArrayBuffer !== 'undefined' &&
+  typeof DataView !== 'undefined' &&
+  isDataViewToString(new DataView(new ArrayBuffer()))
+);
 function isDataView(value) {
   if (typeof DataView === 'undefined') {
     return false;
@@ -279,7 +298,10 @@ exports.isDataView = isDataView;
 function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
 }
-isSharedArrayBufferToString.working = typeof SharedArrayBuffer !== 'undefined' && isSharedArrayBufferToString(new SharedArrayBuffer());
+isSharedArrayBufferToString.working = (
+  typeof SharedArrayBuffer !== 'undefined' &&
+  isSharedArrayBufferToString(new SharedArrayBuffer())
+);
 function isSharedArrayBuffer(value) {
   if (typeof SharedArrayBuffer === 'undefined') {
     return false;
