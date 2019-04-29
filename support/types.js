@@ -64,7 +64,10 @@ function isArrayBufferView(value) {
     return ArrayBuffer.isView(value);
   }
 
-  return ObjectToString(value) === '[object ArrayBuffer]';
+  return (
+    isTypedArray(value) ||
+    isDataView(value)
+  );
 }
 exports.isArrayBufferView = isArrayBufferView;
 
