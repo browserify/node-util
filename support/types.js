@@ -60,7 +60,11 @@ exports.isGeneratorFunction = isGeneratorFunction;
 exports.isPromise = isPromise;
 
 function isArrayBufferView(value) {
-  return ArrayBufferSupported && ArrayBuffer.isView(value);
+  if (ArrayBufferSupported && ArrayBuffer.isView) {
+    return ArrayBuffer.isView(value);
+  }
+
+  return ObjectToString(value) === '[object ArrayBuffer]';
 }
 exports.isArrayBufferView = isArrayBufferView;
 
