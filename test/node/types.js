@@ -61,7 +61,7 @@ for (var _i = 0, _arr = [
   [function () { return new Set()[Symbol.iterator](); }, 'isSetIterator'],
   [function () { return new WeakMap(); }, 'isWeakMap'],
   [function () { return new WeakSet(); }, 'isWeakSet'],
-  [function () { return new ArrayBuffer(); }, 'isArrayBuffer'],
+  [function () { return new ArrayBuffer(1); }, 'isArrayBuffer'],
   [function () { return new Uint8Array(); }, 'isUint8Array'],
   [function () { return new Uint8ClampedArray(); }, 'isUint8ClampedArray'],
   [function () { return new Uint16Array(); }, 'isUint16Array'],
@@ -82,7 +82,7 @@ for (var _i = 0, _arr = [
       value: 'foo'
     });
   }, 'isUint8Array'],
-  [function () { return new DataView(new ArrayBuffer()); }, 'isDataView'],
+  [function () { return new DataView(new ArrayBuffer(1)); }, 'isDataView'],
   [function () { return new SharedArrayBuffer(); }, 'isSharedArrayBuffer'],
   // [ new Proxy({}, {}), 'isProxy' ],
   [function () { return new WebAssembly.Module(wasmBuffer); }, 'isWebAssemblyCompiledModule']
@@ -167,7 +167,7 @@ if (SymbolToStringTagSupported) {
 
 {
   var primitive = function primitive() { return true; };
-  var arrayBuffer = function arrayBuffer() { return new ArrayBuffer(); };
+  var arrayBuffer = function arrayBuffer() { return new ArrayBuffer(1); };
 
   var buffer = function buffer() { return Buffer.from(arrayBuffer()); };
   var dataView = function dataView() { return new DataView(arrayBuffer()); };
