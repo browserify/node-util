@@ -41,7 +41,7 @@ var wasmBuffer = Buffer.from('0061736d01000000', 'hex');
 
 for (var _i = 0, _arr = [
   // [ external, 'isExternal' ],
-  [function () { return new Date(); }],
+  [function () { return new Date(); }, 'isDate'],
   [function () { return function () { return arguments; }(); }, 'isArgumentsObject'],
   [function () { return new Boolean(); }, 'isBooleanObject'],
   [function () { return new Number(); }, 'isNumberObject'],
@@ -49,29 +49,29 @@ for (var _i = 0, _arr = [
   [function () { return Object(Symbol()); }, 'isSymbolObject'],
   [function () { return Object(BigInt(0)); }, 'isBigIntObject'],
   [function () { return new Error(); }, 'isNativeError'],
-  [function () { return new RegExp(); }],
+  [function () { return new RegExp(); }, 'isRegExp'],
   [function () { return eval('(async function() {})'); }, 'isAsyncFunction'],
   [function () { return eval('(function*() {})') }, 'isGeneratorFunction'],
   [function () { return eval('((function*() {})())') }, 'isGeneratorObject'],
-  [function () { return Promise.resolve(); }],
-  [function () { return new Map(); }],
-  [function () { return new Set(); }],
+  [function () { return Promise.resolve(); }, 'isPromise'],
+  [function () { return new Map(); }, 'isMap'],
+  [function () { return new Set(); }, 'isSet'],
   [function () { return new Map()[Symbol.iterator](); }, 'isMapIterator'],
   [function () { return new Set()[Symbol.iterator](); }, 'isSetIterator'],
-  [function () { return new WeakMap(); }],
-  [function () { return new WeakSet(); }],
-  [function () { return new ArrayBuffer(); }],
-  [function () { return new Uint8Array(); }],
-  [function () { return new Uint8ClampedArray(); }],
-  [function () { return new Uint16Array(); }],
-  [function () { return new Uint32Array(); }],
-  [function () { return new Int8Array(); }],
-  [function () { return new Int16Array(); }],
-  [function () { return new Int32Array(); }],
-  [function () { return new Float32Array(); }],
-  [function () { return new Float64Array(); }],
-  [function () { return new BigInt64Array(); }],
-  [function () { return new BigUint64Array(); }],
+  [function () { return new WeakMap(); }, 'isWeakMap'],
+  [function () { return new WeakSet(); }, 'isWeakSet'],
+  [function () { return new ArrayBuffer(); }, 'isArrayBuffer'],
+  [function () { return new Uint8Array(); }, 'isUint8Array'],
+  [function () { return new Uint8ClampedArray(); }, 'isUint8ClampedArray'],
+  [function () { return new Uint16Array(); }, 'isUint16Array'],
+  [function () { return new Uint32Array(); }, 'isUint32Array'],
+  [function () { return new Int8Array(); }, 'isInt8Array'],
+  [function () { return new Int16Array(); }, 'isInt16Array'],
+  [function () { return new Int32Array(); }, 'isInt32Array'],
+  [function () { return new Float32Array(); }, 'isFloat32Array'],
+  [function () { return new Float64Array(); }, 'isFloat64Array'],
+  [function () { return new BigInt64Array(); }, 'isBigInt64Array'],
+  [function () { return new BigUint64Array(); }, 'isBigUint64Array'],
   [function () {
     if (typeof Symbol === 'undefined' || typeof Symbol.toStringTag === 'undefined') {
       throw Error();
@@ -80,15 +80,15 @@ for (var _i = 0, _arr = [
     return Object.defineProperty(new Uint8Array(), Symbol.toStringTag, {
       value: 'foo'
     });
-  }],
-  [function () { return new DataView(new ArrayBuffer()); }],
-  [function () { return new SharedArrayBuffer(); }],
+  }, 'isUint8Array'],
+  [function () { return new DataView(new ArrayBuffer()); }, 'isDataView'],
+  [function () { return new SharedArrayBuffer(); }, 'isSharedArrayBuffer'],
   // [ new Proxy({}, {}), 'isProxy' ],
   [function () { return new WebAssembly.Module(wasmBuffer); }, 'isWebAssemblyCompiledModule']
 ]; _i < _arr.length; _i++) {
   var _arr$_i = _slicedToArray(_arr[_i], 2),
       getValue = _arr$_i[0],
-      _method = _arr$_i[1];
+      method = _arr$_i[1];
 
   var _value = void 0;
   try {
@@ -97,7 +97,6 @@ for (var _i = 0, _arr = [
     console.log('Skipping unsupported type:', getValue);
     continue;
   }
-  var method = _method || "is".concat(_value.constructor.name);
   console.log('Testing', method);
   assert(method in types, "Missing ".concat(method, " for ").concat(inspect(_value)));
   assert(types[method](_value), "Want ".concat(inspect(_value), " to match ").concat(method));
