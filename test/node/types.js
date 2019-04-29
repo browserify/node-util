@@ -104,7 +104,7 @@ for (var _i = 0, _arr = [
   for (var _i3 = 0, _Object$keys2 = Object.keys(types); _i3 < _Object$keys2.length; _i3++) {
     var key = _Object$keys2[_i3];
     if ((types.isArrayBufferView(_value) ||
-         types.isAnyArrayBuffer(_value)) && key.includes('Array') ||
+         types.isAnyArrayBuffer(_value)) && key.indexOf('Array') > -1 ||
          key === 'isBoxedPrimitive') {
       continue;
     }
