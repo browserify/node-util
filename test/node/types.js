@@ -188,7 +188,12 @@ if (SymbolToStringTagSupported) {
     }
     return Object.create(Buffer.prototype);
   };
-  var fakeDataView = function fakeDataView() { return Object.create(DataView.prototype); };
+  var fakeDataView = function fakeDataView() {
+    if (!SymbolToStringTagSupported) {
+      throw new Error();
+    }
+    return Object.create(DataView.prototype);
+  };
   var fakeUint8Array = function fakeUint8Array() { return Object.create(Uint8Array.prototype); };
   var fakeUint8ClampedArray = function fakeUint8ClampedArray() { return Object.create(Uint8ClampedArray.prototype); };
   var fakeUint16Array = function fakeUint16Array() { return Object.create(Uint16Array.prototype); };
