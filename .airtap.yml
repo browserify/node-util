@@ -1,10 +1,14 @@
 browsers:
   - name: chrome
-    version: 27..latest
+    version:
+      - 49 # last supported on XP (keep it so long as it's easy to support)
+      - -1..latest
   - name: firefox
-    version: latest
+    version:
+      - 52 # extended support release
+      - -1..latest
   - name: safari
-    version: latest
+    version: -1..latest
   - name: ie
     version: 9..latest
 sauce_connect: true
