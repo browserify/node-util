@@ -184,38 +184,110 @@ function isBigUint64Array(value) {
 }
 exports.isBigUint64Array = isBigUint64Array;
 
-function isMap(value) {
+function isMapToString(value) {
   return ObjectToString(value) === '[object Map]';
+}
+isMapToString.working = typeof Map !== 'undefined' && isMapToString(new Map());
+
+function isMap(value) {
+  if (typeof Map === 'undefined') {
+    return false;
+  }
+
+  return isMapToString.working
+    ? isMapToString(value)
+    : value instanceof Map;
 }
 exports.isMap = isMap;
 
-function isSet(value) {
+function isSetToString(value) {
   return ObjectToString(value) === '[object Set]';
+}
+isSetToString.working = typeof Set !== 'undefined' && isSetToString(new Set());
+function isSet(value) {
+  if (typeof Set === 'undefined') {
+    return false;
+  }
+
+  return isSetToString.working
+    ? isSetToString(value)
+    : value instanceof Set;
 }
 exports.isSet = isSet;
 
-function isWeakMap(value) {
+function isWeakMapToString(value) {
   return ObjectToString(value) === '[object WeakMap]';
+}
+isWeakMapToString.working = typeof WeakMap !== 'undefined' && isWeakMapToString(new WeakMap());
+function isWeakMap(value) {
+  if (typeof WeakMap === 'undefined') {
+    return false;
+  }
+
+  return isWeakMapToString.working
+    ? isWeakMapToString(value)
+    : value instanceof WeakMap;
 }
 exports.isWeakMap = isWeakMap;
 
-function isWeakSet(value) {
+function isWeakSetToString(value) {
   return ObjectToString(value) === '[object WeakSet]';
+}
+isWeakSetToString.working = typeof WeakSet !== 'undefined' && isWeakSetToString(new WeakSet());
+function isWeakSet(value) {
+  return isWeakSetToString(value);
+  if (typeof WeakSet === 'undefined') {
+    return false;
+  }
+
+  return isWeakSetToString.working
+    ? isWeakSetToString(value)
+    : value instanceof WeakSet;
 }
 exports.isWeakSet = isWeakSet;
 
-function isArrayBuffer(value) {
+function isArrayBufferToString(value) {
   return ObjectToString(value) === '[object ArrayBuffer]';
+}
+isArrayBufferToString.working = typeof ArrayBuffer !== 'undefined' && isArrayBufferToString(new ArrayBuffer());
+function isArrayBuffer(value) {
+  if (typeof ArrayBuffer === 'undefined') {
+    return false;
+  }
+
+  return isArrayBufferToString.working
+    ? isArrayBufferToString(value)
+    : value instanceof ArrayBuffer;
 }
 exports.isArrayBuffer = isArrayBuffer;
 
-function isDataView(value) {
+function isDataViewToString(value) {
   return ObjectToString(value) === '[object DataView]';
+}
+isDataViewToString.working = typeof ArrayBuffer !== 'undefined' && typeof DataView !== 'undefined' && isDataViewToString(new DataView(new ArrayBuffer()));
+function isDataView(value) {
+  if (typeof DataView === 'undefined') {
+    return false;
+  }
+
+  return isDataViewToString.working
+    ? isDataViewToString(value)
+    : value instanceof DataView;
 }
 exports.isDataView = isDataView;
 
-function isSharedArrayBuffer(value) {
+function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
+}
+isSharedArrayBufferToString.working = typeof SharedArrayBuffer !== 'undefined' && isSharedArrayBufferToString(new SharedArrayBuffer());
+function isSharedArrayBuffer(value) {
+  if (typeof SharedArrayBuffer === 'undefined') {
+    return false;
+  }
+
+  return isSharedArrayBufferToString.working
+    ? isSharedArrayBufferToString(value)
+    : value instanceof SharedArrayBuffer;
 }
 exports.isSharedArrayBuffer = isSharedArrayBuffer;
 
