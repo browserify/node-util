@@ -3,6 +3,8 @@
 
 'use strict';
 
+var isBuffer = require('./isBuffer');
+
 var isArgumentsObject = require('is-arguments');
 var isGeneratorFunction = require('is-generator-function');
 var isPromise = require('is-promise');
@@ -96,7 +98,10 @@ function isUint8Array(value) {
   if (Uint8ArraySupported && SymbolToStringTagSupported) {
     return TypedArrayProto_toStringTag(value) === 'Uint8Array';
   } else {
-    return ObjectToString(value) === '[object Uint8Array]';
+    return (
+      ObjectToString(value) === '[object Uint8Array]' ||
+      isBuffer(value)
+    );
   }
 }
 exports.isUint8Array = isUint8Array;

@@ -182,7 +182,12 @@ if (SymbolToStringTagSupported) {
   var bigInt64Array = function bigInt64Array() { return new BigInt64Array(arrayBuffer()); };
   var bigUint64Array = function bigUint64Array() { return new BigUint64Array(arrayBuffer()); };
 
-  var fakeBuffer = function fakeBuffer() { return Object.create(Buffer.prototype); };
+  var fakeBuffer = function fakeBuffer() {
+    if (!SymbolToStringTagSupported) {
+      throw new Error();
+    }
+    return Object.create(Buffer.prototype);
+  };
   var fakeDataView = function fakeDataView() { return Object.create(DataView.prototype); };
   var fakeUint8Array = function fakeUint8Array() { return Object.create(Uint8Array.prototype); };
   var fakeUint8ClampedArray = function fakeUint8ClampedArray() { return Object.create(Uint8ClampedArray.prototype); };
