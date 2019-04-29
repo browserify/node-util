@@ -134,31 +134,35 @@ console.log('Testing', 'isBoxedPrimitive');
   assert(types.isBoxedPrimitive(entry));
 });
 
-[
-  'Uint8Array',
-  'Uint8ClampedArray',
-  'Uint16Array',
-  'Uint32Array',
-  'Int8Array',
-  'Int16Array',
-  'Int32Array',
-  'Float32Array',
-  'Float64Array',
-  'BigInt64Array',
-  'BigUint64Array'
-].forEach(function (typedArray) {
-  var method = 'is' + typedArray;
-  var constructor = 'new ' + typedArray;
-  var array;
-  try {
-    array = vm.runInNewContext(constructor);
-  } catch (e) {
-    return;
-  }
-  console.log('Testing fake typed arrays', method);
-  assert(!types[method](_defineProperty({}, Symbol.toStringTag, typedArray)));
-  assert(types[method](array));
-});
+var SymbolSupported = typeof Symbol !== 'undefined';
+var SymbolToStringTagSupported = SymbolSupported && typeof Symbol.toStringTag !== 'undefined';
+if (SymbolToStringTagSupported) {
+  [
+    'Uint8Array',
+    'Uint8ClampedArray',
+    'Uint16Array',
+    'Uint32Array',
+    'Int8Array',
+    'Int16Array',
+    'Int32Array',
+    'Float32Array',
+    'Float64Array',
+    'BigInt64Array',
+    'BigUint64Array'
+  ].forEach(function (typedArray) {
+    var method = 'is' + typedArray;
+    var constructor = 'new ' + typedArray;
+    var array;
+    try {
+      array = vm.runInNewContext(constructor);
+    } catch (e) {
+      return;
+    }
+    console.log('Testing fake typed arrays', method);
+    assert(!types[method](_defineProperty({}, Symbol.toStringTag, typedArray)));
+    assert(types[method](array));
+  });
+}
 
 {
   var primitive = function primitive() { return true; };
