@@ -16,6 +16,7 @@ var _require = require('../../'),
     types = _require.types;
 var vm = require('vm');
 
+var Buffer = require('safe-buffer').Buffer
 var objectEntries = require('object.entries');
 
 function uncurryThis(f) {
