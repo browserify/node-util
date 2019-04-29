@@ -8,6 +8,11 @@ var assert = require('assert');
 var callbackify = require('../../').callbackify;
 var execFile = require('child_process').execFile;
 
+if (typeof Promise === 'undefined') {
+  console.log('no global Promise found, skipping callbackify tests');
+  return;
+}
+
 var values = [
   'hello world',
   null,
@@ -72,7 +77,7 @@ if (typeof Symbol !== 'undefined') {
           assert.strictEqual(err.message, 'Promise was rejected with a falsy value');
           assert.strictEqual(err.reason, value);
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(String(value).slice(-err.message.length), err.message);
         }
       } else {
         assert.strictEqual(err, value);
@@ -97,7 +102,7 @@ if (typeof Symbol !== 'undefined') {
           assert.strictEqual(err.message, 'Promise was rejected with a falsy value');
           assert.strictEqual(err.reason, value);
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(String(value).slice(-err.message.length), err.message);
         }
       } else {
         assert.strictEqual(err, value);
