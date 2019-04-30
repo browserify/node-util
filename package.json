@@ -9,10 +9,10 @@
     "util"
   ],
   "version": "0.11.1",
-  "homepage": "https://github.com/defunctzombie/node-util",
+  "homepage": "https://github.com/browserify/node-util",
   "repository": {
     "type": "git",
-    "url": "git://github.com/defunctzombie/node-util"
+    "url": "git://github.com/browserify/node-util"
   },
   "main": "./util.js",
   "files": [
