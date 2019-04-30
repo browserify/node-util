@@ -7,7 +7,6 @@ var isBuffer = require('./isBuffer');
 
 var isArgumentsObject = require('is-arguments');
 var isGeneratorFunction = require('is-generator-function');
-var isPromise = require('is-promise');
 
 function uncurryThis(f) {
   return f.call.bind(f);
@@ -59,6 +58,22 @@ exports.isArgumentsObject = isArgumentsObject;
 
 exports.isGeneratorFunction = isGeneratorFunction;
 
+// Taken from here and modified for better browser support
+// https://github.com/sindresorhus/p-is-promise/blob/cda35a513bda03f977ad5cde3a079d237e82d7ef/index.js
+function isPromise(input) {
+	return (
+		(
+			typeof Promise !== 'undefined' &&
+			input instanceof Promise
+		) ||
+		(
+			input !== null &&
+			typeof input === 'object' &&
+			typeof input.then === 'function' &&
+			typeof input.catch === 'function'
+		)
+	);
+}
 exports.isPromise = isPromise;
 
 function isArrayBufferView(value) {

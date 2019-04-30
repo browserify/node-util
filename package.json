@@ -28,7 +28,6 @@
     "inherits": "2.0.3",
     "is-arguments": "^1.0.4",
     "is-generator-function": "^1.0.7",
-    "is-promise": "^2.1.0",
     "object.entries": "^1.1.0",
     "safe-buffer": "^5.1.2"
   },
