@@ -19,6 +19,11 @@ var vm = require('vm');
 var Buffer = require('safe-buffer').Buffer
 var objectEntries = require('object.entries');
 
+// "polyfill" deepStrictEqual on Node 0.12 and below
+if (!assert.deepStrictEqual) {
+  assert.deepStrictEqual = assert.deepEqual;
+}
+
 function uncurryThis(f) {
   return f.call.bind(f);
 }
@@ -82,7 +87,7 @@ for (var _i = 0, _arr = [
       value: 'foo'
     });
   }, 'isUint8Array'],
-  [function () { return new DataView(new ArrayBuffer(1)); }, 'isDataView'],
+  [function () { return new DataView(new ArrayBuffer(1), 0, 1); }, 'isDataView'],
   [function () { return new SharedArrayBuffer(); }, 'isSharedArrayBuffer'],
   // [ new Proxy({}, {}), 'isProxy' ],
   [function () { return new WebAssembly.Module(wasmBuffer); }, 'isWebAssemblyCompiledModule']
@@ -137,7 +142,9 @@ console.log('Testing', 'isBoxedPrimitive');
 
 var SymbolSupported = typeof Symbol !== 'undefined';
 var SymbolToStringTagSupported = SymbolSupported && typeof Symbol.toStringTag !== 'undefined';
-if (SymbolToStringTagSupported) {
+var isBuggyFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent) &&
+  parseInt(navigator.userAgent.split('Firefox/')[1], 10) < 66
+if (SymbolToStringTagSupported && !isBuggyFirefox) {
   [
     'Uint8Array',
     'Uint8ClampedArray',
@@ -164,13 +171,19 @@ if (SymbolToStringTagSupported) {
     assert(types[method](array));
   });
 }
+if (isBuggyFirefox) {
+  console.log('skipping fake typed array tests because they do not work in FF')
+}
 
+// Old Node.js had a fully custom Buffer implementation, newer are based on ArrayBuffer
+// This is important for the ArrayBuffer and typed array tests
+var isBufferBasedOnArrayBuffer = Buffer.alloc(1).buffer !== undefined;
 {
   var primitive = function primitive() { return true; };
   var arrayBuffer = function arrayBuffer() { return new ArrayBuffer(1); };
 
   var buffer = function buffer() { return Buffer.from(arrayBuffer()); };
-  var dataView = function dataView() { return new DataView(arrayBuffer()); };
+  var dataView = function dataView() { return new DataView(arrayBuffer(), 0, 1); };
   var uint8Array = function uint8Array() { return new Uint8Array(arrayBuffer()); };
   var uint8ClampedArray = function uint8ClampedArray() { return new Uint8ClampedArray(arrayBuffer()); };
   var uint16Array = function uint16Array() { return new Uint16Array(arrayBuffer()); };
@@ -208,7 +221,7 @@ if (SymbolToStringTagSupported) {
   var fakeBigUint64Array = function fakeBigUint64Array() { return Object.create(BigUint64Array.prototype); };
 
   var stealthyDataView = function stealthyDataView() {
-    return Object.setPrototypeOf(new DataView(arrayBuffer()), Uint8Array.prototype);
+    return Object.setPrototypeOf(new DataView(arrayBuffer(), 0, 1), Uint8Array.prototype);
   };
   var stealthyUint8Array = function stealthyUint8Array() {
     return Object.setPrototypeOf(new Uint8Array(arrayBuffer()), ArrayBuffer.prototype);
@@ -384,7 +397,7 @@ if (SymbolToStringTagSupported) {
 
   var expected = {
     isArrayBufferView: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       dataView,
       stealthyDataView,
       uint8Array,
@@ -411,7 +424,7 @@ if (SymbolToStringTagSupported) {
       stealthyBigUint64Array
     ],
     isTypedArray: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       uint8Array,
       stealthyUint8Array,
       uint8ClampedArray,
@@ -436,7 +449,7 @@ if (SymbolToStringTagSupported) {
       stealthyBigUint64Array
     ],
     isUint8Array: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       uint8Array,
       stealthyUint8Array
     ],

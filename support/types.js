@@ -115,7 +115,10 @@ function isUint8Array(value) {
   } else {
     return (
       ObjectToString(value) === '[object Uint8Array]' ||
-      isBuffer(value)
+      // If it's a Buffer instance _and_ has a `.buffer` property,
+      // this is an ArrayBuffer based buffer; thus it's an Uint8Array
+      // (Old Node.js had a custom non-Uint8Array implementation)
+      isBuffer(value) && value.buffer !== undefined
     );
   }
 }
@@ -309,7 +312,7 @@ function isDataViewToString(value) {
 isDataViewToString.working = (
   typeof ArrayBuffer !== 'undefined' &&
   typeof DataView !== 'undefined' &&
-  isDataViewToString(new DataView(new ArrayBuffer()))
+  isDataViewToString(new DataView(new ArrayBuffer(1), 0, 1))
 );
 function isDataView(value) {
   if (typeof DataView === 'undefined') {
