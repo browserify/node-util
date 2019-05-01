@@ -175,6 +175,9 @@ if (isBuggyFirefox) {
   console.log('skipping fake typed array tests because they do not work in FF')
 }
 
+// Old Node.js had a fully custom Buffer implementation, newer are based on ArrayBuffer
+// This is important for the ArrayBuffer and typed array tests
+var isBufferBasedOnArrayBuffer = Buffer.alloc(1).buffer !== undefined;
 {
   var primitive = function primitive() { return true; };
   var arrayBuffer = function arrayBuffer() { return new ArrayBuffer(1); };
@@ -394,7 +397,7 @@ if (isBuggyFirefox) {
 
   var expected = {
     isArrayBufferView: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       dataView,
       stealthyDataView,
       uint8Array,
@@ -421,7 +424,7 @@ if (isBuggyFirefox) {
       stealthyBigUint64Array
     ],
     isTypedArray: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       uint8Array,
       stealthyUint8Array,
       uint8ClampedArray,
@@ -446,7 +449,7 @@ if (isBuggyFirefox) {
       stealthyBigUint64Array
     ],
     isUint8Array: [
-      buffer,
+      isBufferBasedOnArrayBuffer ? buffer : undefined,
       uint8Array,
       stealthyUint8Array
     ],
