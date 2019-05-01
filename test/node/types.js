@@ -19,6 +19,11 @@ var vm = require('vm');
 var Buffer = require('safe-buffer').Buffer
 var objectEntries = require('object.entries');
 
+// "polyfill" deepStrictEqual on Node 0.12 and below
+if (!assert.deepStrictEqual) {
+  assert.deepStrictEqual = assert.strictEqual;
+}
+
 function uncurryThis(f) {
   return f.call.bind(f);
 }
