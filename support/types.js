@@ -309,7 +309,7 @@ function isDataViewToString(value) {
 isDataViewToString.working = (
   typeof ArrayBuffer !== 'undefined' &&
   typeof DataView !== 'undefined' &&
-  isDataViewToString(new DataView(new ArrayBuffer()))
+  isDataViewToString(new DataView(new ArrayBuffer(1), 0, 1))
 );
 function isDataView(value) {
   if (typeof DataView === 'undefined') {

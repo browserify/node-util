@@ -82,7 +82,7 @@ for (var _i = 0, _arr = [
       value: 'foo'
     });
   }, 'isUint8Array'],
-  [function () { return new DataView(new ArrayBuffer(1)); }, 'isDataView'],
+  [function () { return new DataView(new ArrayBuffer(1), 0, 1); }, 'isDataView'],
   [function () { return new SharedArrayBuffer(); }, 'isSharedArrayBuffer'],
   // [ new Proxy({}, {}), 'isProxy' ],
   [function () { return new WebAssembly.Module(wasmBuffer); }, 'isWebAssemblyCompiledModule']
@@ -170,7 +170,7 @@ if (SymbolToStringTagSupported) {
   var arrayBuffer = function arrayBuffer() { return new ArrayBuffer(1); };
 
   var buffer = function buffer() { return Buffer.from(arrayBuffer()); };
-  var dataView = function dataView() { return new DataView(arrayBuffer()); };
+  var dataView = function dataView() { return new DataView(arrayBuffer(), 0, 1); };
   var uint8Array = function uint8Array() { return new Uint8Array(arrayBuffer()); };
   var uint8ClampedArray = function uint8ClampedArray() { return new Uint8ClampedArray(arrayBuffer()); };
   var uint16Array = function uint16Array() { return new Uint16Array(arrayBuffer()); };
@@ -208,7 +208,7 @@ if (SymbolToStringTagSupported) {
   var fakeBigUint64Array = function fakeBigUint64Array() { return Object.create(BigUint64Array.prototype); };
 
   var stealthyDataView = function stealthyDataView() {
-    return Object.setPrototypeOf(new DataView(arrayBuffer()), Uint8Array.prototype);
+    return Object.setPrototypeOf(new DataView(arrayBuffer(), 0, 1), Uint8Array.prototype);
   };
   var stealthyUint8Array = function stealthyUint8Array() {
     return Object.setPrototypeOf(new Uint8Array(arrayBuffer()), ArrayBuffer.prototype);
