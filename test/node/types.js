@@ -142,7 +142,9 @@ console.log('Testing', 'isBoxedPrimitive');
 
 var SymbolSupported = typeof Symbol !== 'undefined';
 var SymbolToStringTagSupported = SymbolSupported && typeof Symbol.toStringTag !== 'undefined';
-if (SymbolToStringTagSupported) {
+var isBuggyFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent) &&
+  parseInt(navigator.userAgent.split('Firefox/')[1], 10) < 66
+if (SymbolToStringTagSupported && !isBuggyFirefox) {
   [
     'Uint8Array',
     'Uint8ClampedArray',
@@ -168,6 +170,9 @@ if (SymbolToStringTagSupported) {
     assert(!types[method](_defineProperty({}, Symbol.toStringTag, typedArray)));
     assert(types[method](array));
   });
+}
+if (isBuggyFirefox) {
+  console.log('skipping fake typed array tests because they do not work in FF')
 }
 
 {
