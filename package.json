@@ -33,7 +33,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "airtap": "~1.0.0",
+    "airtap": "^2.0.2",
     "is-async-supported": "~1.2.0",
     "run-series": "~1.1.4",
     "tape": "~4.9.0"
