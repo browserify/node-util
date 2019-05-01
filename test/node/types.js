@@ -21,7 +21,7 @@ var objectEntries = require('object.entries');
 
 // "polyfill" deepStrictEqual on Node 0.12 and below
 if (!assert.deepStrictEqual) {
-  assert.deepStrictEqual = assert.strictEqual;
+  assert.deepStrictEqual = assert.deepEqual;
 }
 
 function uncurryThis(f) {
