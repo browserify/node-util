@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.0
+* Add `util.types`. ([@lukechilds](https://github.com/lukechilds) in [#32](https://github.com/browserify/node-util/pull/35))
+
 ## 0.11.1
-* Fix an infinite loop in `util.deprecate` some build configurations. ([@bernardmcmanus](https://github.com/bernardmcmanus) in [#12](https://github.com/goto-bus-stop/node-util/pull/12))
+* Fix an infinite loop in `util.deprecate` some build configurations. ([@bernardmcmanus](https://github.com/bernardmcmanus) in [#12](https://github.com/browserify/node-util/pull/12))
 
 ## 0.11.0
 * Add `util.promisify`.
