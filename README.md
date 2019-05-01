@@ -51,7 +51,7 @@ The below table lists the parity of each API with the Node.js version. At the ti
 | `promisify` | 12.1.0 |
 | `TextDecoder` | missing |
 | `TextEncoder` | missing |
-| `types` | missing |
+| `types` | 12.1.0 |
 
 `util` also contains deprecated Node.js APIs. `_extend` and `log` were deprecated in v6, while the `is*` family of functions was deprecated in v4. All these APIs are up to date:
 
