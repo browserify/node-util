@@ -41,7 +41,7 @@ The below table lists the parity of each API with the Node.js version. At the ti
 | API | Matching Version |
 |-|-|
 | `callbackify` | 12.1.0 |
-| `debuglog` | 0.11.3 |
+| `debuglog` | 10.0.0 |
 | `format` | <8.4.0 |
 | `formatWithOptions` | missing |
 | `getSystemErrorName` | missing |
