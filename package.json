@@ -10,7 +10,7 @@
     "./support/isBuffer.js": "./support/isBufferBrowser.js"
   },
   "dependencies": {
-    "inherits": "2.0.3",
+    "inherits": "^2.0.3",
     "is-arguments": "^1.0.4",
     "is-generator-function": "^1.0.7",
     "object.entries": "^1.1.0",
