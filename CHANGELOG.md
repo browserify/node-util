@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.1
+* Update `util.debuglog` compatibility to Node 10.4.0. ([@goto-bus-stop](https://github.com/goto-bus-stop) in [#27](https://github.com/browserify/node-util/pull/27))
+* Allow newer versions of `inherits`. ([@snyamathi](https://github.com/snyamathi) in [#39](https://github.com/browserify/node-util/pull/39))
+
 ## 0.12.0
 * Add `util.types`. ([@lukechilds](https://github.com/lukechilds) in [#32](https://github.com/browserify/node-util/pull/35))
 
