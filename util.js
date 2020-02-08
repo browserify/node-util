@@ -607,7 +607,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-var kCustomPromisifiedSymbol = typeof Symbol !== 'undefined' ? Symbol('util.promisify.custom') : undefined;
+var kCustomPromisifiedSymbol =
+  typeof Symbol === 'function' && typeof Symbol['for'] === 'function'
+    ? Symbol['for']('nodejs.util.promisify.custom')
+    : undefined;
 
 exports.promisify = function promisify(original) {
   if (typeof original !== 'function')
