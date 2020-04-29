@@ -195,13 +195,6 @@ isWeakSetToString.working = (
 );
 function isWeakSet(value) {
   return isWeakSetToString(value);
-  if (typeof WeakSet === 'undefined') {
-    return false;
-  }
-
-  return isWeakSetToString.working
-    ? isWeakSetToString(value)
-    : value instanceof WeakSet;
 }
 exports.isWeakSet = isWeakSet;
 
