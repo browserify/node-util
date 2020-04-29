@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "airtap": "~1.0.0",
+    "core-js": "^3.6.5",
     "is-async-supported": "~1.2.0",
     "object.assign": "~4.1.0",
     "object.entries": "^1.1.0",
@@ -40,6 +41,8 @@
   "scripts": {
     "test": "node test/node/index.js",
     "test:browsers": "airtap test/browser/index.js",
+    "test:browsers:with-polyfills": "airtap test/browser/with-polyfills.js",
+    "test:browsers:with-polyfills:local": "npm run test:browsers:with-polyfills -- --local",
     "test:browsers:local": "npm run test:browsers -- --local"
   }
 }
