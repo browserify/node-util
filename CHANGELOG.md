@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.3
+* Use robust `which-typed-array`, `is-typed-array` modules for the `util.types.isTypedArray` family of functions. ([@wbinnssmith](https://github.com/wbinnssmith) in [#47](https://github.com/browserify/node-util/pull/47))
+
+  This fixes crash in IE11 when a polyfilled `Symbol` is available in the environment.
+
 ## 0.12.2
 * Move `object.entries` dependency to a dev-only dependency. ([@goto-bus-stop](https://github.com/goto-bus-stop) in [622f036](https://github.com/browserify/node-util/commit/622f0361540997e7e7b8abcff9865b47b2fa658c))
 
