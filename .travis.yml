@@ -1,22 +1,47 @@
+os: linux
+dist: bionic
 language: node_js
-node_js:
-  - 'stable'
-  - '10'
-  - '9'
-  - '8'
-  - '6'
-  - '4'
-  - '0.12'
-  - '0.10'
-script:
-  - 'npm test'
-  # Run browser tests on one node version.
-  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_NODE_VERSION}" = "stable" ]; then npm run test:browsers; fi'
-  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_NODE_VERSION}" = "stable" ]; then npm run test:browsers:with-polyfills; fi'
-addons:
+
+.addons: &AIRTAP
   sauce_connect: true
   hosts:
     - airtap.local
+
+jobs:
+  include:
+    - name: Run tests on stable Node.js
+      node_js: stable
+      script: npm test
+    - name: Run tests on Node.js 12
+      node_js: 12
+      script: npm test
+    - name: Run tests on Node.js 10
+      node_js: 10
+      script: npm test
+    - name: Run tests on Node.js 8
+      node_js: 8
+      script: npm test
+    - name: Run tests on Node.js 6
+      node_js: 6
+      script: npm test
+    - name: Run tests on Node.js 4
+      node_js: 4
+      script: npm test
+    - name: Run tests on Node.js 0.12
+      node_js: '0.12'
+      script: npm test
+    - name: Run tests on Node.js 0.10
+      node_js: '0.10'
+      script: npm test
+    - name: Run browser tests
+      node_js: lts/*
+      script: npm run test:browsers
+      addons: *AIRTAP
+    - name: Run browser tests with polyfilled environment
+      node_js: lts/*
+      script: npm run test:browsers:with-polyfills
+      addons: *AIRTAP
+
 env:
   global:
   - secure: AdUubswCR68/eGD+WWjwTHgFbelwQGnNo81j1IOaUxKw+zgFPzSnFEEtDw7z98pWgg7p9DpCnyzzSnSllP40wq6AG19OwyUJjSLoZK57fp+r8zwTQwWiSqUgMu2YSMmKJPIO/aoSGpRQXT+L1nRrHoUJXgFodyIZgz40qzJeZjc=
