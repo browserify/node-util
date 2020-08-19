@@ -29,7 +29,7 @@ var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
     return descriptors;
   };
 
-var formatRegExp = /%[sdj%]/g;
+var formatRegExp = /%[sdij%]/g;
 exports.format = function(f) {
   if (!isString(f)) {
     var objects = [];
@@ -48,6 +48,7 @@ exports.format = function(f) {
     switch (x) {
       case '%s': return String(args[i++]);
       case '%d': return Number(args[i++]);
+      case '%i': return parseInt(args[i++], 10);
       case '%j':
         try {
           return JSON.stringify(args[i++]);
