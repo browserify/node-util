@@ -19,6 +19,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+var process = require('process');
+
 var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors ||
   function getOwnPropertyDescriptors(obj) {
     var keys = Object.keys(obj);
