@@ -609,58 +609,80 @@ function hasOwnProperty(obj, prop) {
 
 var kCustomPromisifiedSymbol = typeof Symbol !== 'undefined' ? Symbol('util.promisify.custom') : undefined;
 
-exports.promisify = function promisify(original) {
-  if (typeof original !== 'function')
+exports.promisify = getPromisify();
+
+exports.promisifyFn = getPromisify('promisifyFn');
+
+/**
+ * Return two kinds of promise
+ * @param {String} type Return different promise according to different types
+ */
+function getPromisify(type) {
+  return function multiPromisify(original) {
+    if (typeof original !== 'function')
     throw new TypeError('The "original" argument must be of type Function');
 
-  if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
-    var fn = original[kCustomPromisifiedSymbol];
-    if (typeof fn !== 'function') {
-      throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+    if (kCustomPromisifiedSymbol && original[kCustomPromisifiedSymbol]) {
+      var fn = original[kCustomPromisifiedSymbol];
+      if (typeof fn !== 'function') {
+        throw new TypeError('The "util.promisify.custom" argument must be of type Function');
+      }
+      Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+        value: fn, enumerable: false, writable: false, configurable: true
+      });
+      return fn;
     }
-    Object.defineProperty(fn, kCustomPromisifiedSymbol, {
+
+    function fn() {
+      var promiseResolve, promiseReject;
+      var promise = new Promise(function (resolve, reject) {
+        promiseResolve = resolve;
+        promiseReject = reject;
+      });
+
+      var args = [];
+      for (var i = 0; i < arguments.length; i++) {
+        args.push(arguments[i]);
+      }
+      var callback;
+      var isPromisifyFn = type === 'promisifyFn';
+      if (isPromisifyFn) {
+        callback = function (err, value) {
+          if (err) {
+            promiseResolve([ err, null ]);
+          } else {
+            promiseResolve([ null, value ]);
+          }
+        }
+      } else {
+        callback = function (err, value) {
+          if (err) {
+            promiseReject(err);
+          } else {
+            promiseResolve(value);
+          }
+        }
+      }
+      args.push(callback);
+      try {
+        original.apply(this, args);
+      } catch (err) {
+        isPromisifyFn ? promiseResolve([ err, null ]) : promiseReject(err);
+      }
+
+      return promise;
+    }
+
+    Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
+
+    if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
       value: fn, enumerable: false, writable: false, configurable: true
     });
-    return fn;
+    return Object.defineProperties(
+      fn,
+      getOwnPropertyDescriptors(original)
+    );
   }
-
-  function fn() {
-    var promiseResolve, promiseReject;
-    var promise = new Promise(function (resolve, reject) {
-      promiseResolve = resolve;
-      promiseReject = reject;
-    });
-
-    var args = [];
-    for (var i = 0; i < arguments.length; i++) {
-      args.push(arguments[i]);
-    }
-    args.push(function (err, value) {
-      if (err) {
-        promiseReject(err);
-      } else {
-        promiseResolve(value);
-      }
-    });
-
-    try {
-      original.apply(this, args);
-    } catch (err) {
-      promiseReject(err);
-    }
-
-    return promise;
-  }
-
-  Object.setPrototypeOf(fn, Object.getPrototypeOf(original));
-
-  if (kCustomPromisifiedSymbol) Object.defineProperty(fn, kCustomPromisifiedSymbol, {
-    value: fn, enumerable: false, writable: false, configurable: true
-  });
-  return Object.defineProperties(
-    fn,
-    getOwnPropertyDescriptors(original)
-  );
 }
 
 exports.promisify.custom = kCustomPromisifiedSymbol
