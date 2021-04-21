@@ -236,7 +236,7 @@ function isDataView(value) {
 exports.isDataView = isDataView;
 
 // Store a copy of SharedArrayBuffer in case it's deleted elsewhere
-var SharedArrayBufferCopy = SharedArrayBuffer;
+var SharedArrayBufferCopy = typeof SharedArrayBuffer !== 'undefined' ? SharedArrayBuffer : undefined;
 function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
 }
