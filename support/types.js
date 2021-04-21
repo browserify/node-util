@@ -238,10 +238,21 @@ exports.isDataView = isDataView;
 function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
 }
-isSharedArrayBufferToString.working = (
-  typeof SharedArrayBuffer !== 'undefined' &&
-  isSharedArrayBufferToString(new SharedArrayBuffer())
-);
+// Avoid invoking SharedArrayBuffer constructor until required, then memoize
+Object.defineProperty(isSharedArrayBufferToString, 'working', {
+  get: (function() {
+    var isWorking;
+    return function () {
+      if (isWorking === undefined) {
+        isWorking = (
+          typeof SharedArrayBuffer !== 'undefined' &&
+          isSharedArrayBufferToString(new SharedArrayBuffer())
+        )
+      }
+      return isWorking;
+    }
+  })()
+});
 function isSharedArrayBuffer(value) {
   if (typeof SharedArrayBuffer === 'undefined') {
     return false;
