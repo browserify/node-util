@@ -235,32 +235,23 @@ function isDataView(value) {
 }
 exports.isDataView = isDataView;
 
+// Store a copy of SharedArrayBuffer in case it's deleted elsewhere
+var SharedArrayBufferCopy = SharedArrayBuffer;
 function isSharedArrayBufferToString(value) {
   return ObjectToString(value) === '[object SharedArrayBuffer]';
 }
-// Avoid invoking SharedArrayBuffer constructor until required, then memoize
-Object.defineProperty(isSharedArrayBufferToString, 'working', {
-  get: (function() {
-    var isWorking;
-    return function () {
-      if (isWorking === undefined) {
-        isWorking = (
-          typeof SharedArrayBuffer !== 'undefined' &&
-          isSharedArrayBufferToString(new SharedArrayBuffer())
-        )
-      }
-      return isWorking;
-    }
-  })()
-});
 function isSharedArrayBuffer(value) {
-  if (typeof SharedArrayBuffer === 'undefined') {
+  if (typeof SharedArrayBufferCopy === 'undefined') {
     return false;
+  }
+
+  if (typeof isSharedArrayBufferToString.working === 'undefined') {
+    isSharedArrayBufferToString.working = isSharedArrayBufferToString(new SharedArrayBufferCopy());
   }
 
   return isSharedArrayBufferToString.working
     ? isSharedArrayBufferToString(value)
-    : value instanceof SharedArrayBuffer;
+    : value instanceof SharedArrayBufferCopy;
 }
 exports.isSharedArrayBuffer = isSharedArrayBuffer;
 
