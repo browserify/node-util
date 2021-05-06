@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.4
+* Avoid SharedArrayBuffer until required. ([@snyamathi](https://github.com/snyamathi) in [#59](https://github.com/browserify/node-util/pull/59))
+
+  This fixes a [security warning](https://developers.google.com/search/blog/2021/03/sharedarraybuffer-notes) for SharedArrayBuffer.
+
 ## 0.12.3
 * Use robust `which-typed-array`, `is-typed-array` modules for the `util.types.isTypedArray` family of functions. ([@wbinnssmith](https://github.com/wbinnssmith) in [#47](https://github.com/browserify/node-util/pull/47))
 
