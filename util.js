@@ -105,9 +105,8 @@ exports.deprecate = function(fn, msg) {
 
 var debugs = {};
 var debugEnvRegex = /^$/;
-
-if (process.env.NODE_DEBUG) {
-  var debugEnv = process.env.NODE_DEBUG;
+if (process && process.env && process.env.NODE_DEBUG) {
+  var debugEnv = env.NODE_DEBUG;
   debugEnv = debugEnv.replace(/[|\\{}()[\]^$+?.]/g, '\\$&')
     .replace(/\*/g, '.*')
     .replace(/,/g, '$|^')
