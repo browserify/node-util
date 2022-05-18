@@ -708,8 +708,9 @@ function callbackify(original) {
   }
 
   Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
-  Object.defineProperties(callbackified,
-                          getOwnPropertyDescriptors(original));
+  const desc = getOwnPropertyDescriptors(original);
+  desc.length.value += 1;
+  Object.defineProperties(callbackified, desc);
   return callbackified;
 }
 exports.callbackify = callbackify;

@@ -193,3 +193,29 @@ if (false) {
 if (require('is-async-supported')()) {
   require('./callbackify-async');
 }
+
+(function callbackify_resulting_function_should_have_one_more_argument() {
+
+  var nodeJSVersion = parseInt(process.version.substring(1,3),10);
+
+  console.log("Testing callbackify resulting function should have one more argument")
+  var original_callbackify = require('util').callbackify;
+  // Test that resulting function should have one more argument
+  [
+    function(){ },
+    function(a){ }, 
+    function(a, b) { }
+  ].forEach(function (fct) {
+
+    var node_callbackified = original_callbackify(fct);
+    var browser_callbackified = callbackify(fct);
+
+    if (nodeJSVersion >= 12 && node_callbackified.length !== fct.length + 1) {
+      // this behavior is only true with node 12 and above, where the bug was fixed
+      throw new Error("callbackified function should have one more argument");
+    }
+    if (browser_callbackified.length !== node_callbackified.length) {
+      throw new Error("callbackified function should have one more argument, like in node");
+    }
+  });
+})();
