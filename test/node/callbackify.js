@@ -7,6 +7,39 @@ var common = require('./common');
 var assert = require('assert');
 var callbackify = require('../../').callbackify;
 var execFile = require('child_process').execFile;
+var nodeJSVersion = require('../../support/nodeJSVersion');
+var isFunctionLengthConfigurable = require("../../support/isFunctionLengthConfigurable");
+
+(function callbackify_resulting_function_should_have_one_more_argument() {
+ 
+  if (!isFunctionLengthConfigurable()) {
+    console.log("skipping this test as function.length is not configurable in the current javascript engine");
+    return;
+  }
+  var nodeVersion = nodeJSVersion();
+ 
+  console.log("Testing callbackify resulting function should have one more argument")
+  var original_callbackify = require('util').callbackify;
+  // Test that resulting function should have one more argument
+  [
+    function () { },
+    function (a) { },
+    function (a, b) { }
+  ].forEach(function (fct) {
+
+    var node_callbackified = original_callbackify(fct);
+    var browser_callbackified = callbackify(fct);
+
+    if (nodeVersion >= 12 && node_callbackified.length !== fct.length + 1) {
+      // this behavior is only true with node 12 and above, where the bug was fixed
+      throw new Error("callbackified function should have one more argument");
+    }
+    if (browser_callbackified.length !== node_callbackified.length) {
+      console.log("browser_callbackified=", browser_callbackified.length, "node_callbackified=", node_callbackified.length)
+      throw new Error("callbackified function should have one more argument, like in node");
+    }
+  });
+})();
 
 if (typeof Promise === 'undefined') {
   console.log('no global Promise found, skipping callbackify tests');
@@ -193,29 +226,3 @@ if (false) {
 if (require('is-async-supported')()) {
   require('./callbackify-async');
 }
-
-(function callbackify_resulting_function_should_have_one_more_argument() {
-
-  var nodeJSVersion = parseInt(process.version.substring(1,3),10);
-
-  console.log("Testing callbackify resulting function should have one more argument")
-  var original_callbackify = require('util').callbackify;
-  // Test that resulting function should have one more argument
-  [
-    function(){ },
-    function(a){ }, 
-    function(a, b) { }
-  ].forEach(function (fct) {
-
-    var node_callbackified = original_callbackify(fct);
-    var browser_callbackified = callbackify(fct);
-
-    if (nodeJSVersion >= 12 && node_callbackified.length !== fct.length + 1) {
-      // this behavior is only true with node 12 and above, where the bug was fixed
-      throw new Error("callbackified function should have one more argument");
-    }
-    if (browser_callbackified.length !== node_callbackified.length) {
-      throw new Error("callbackified function should have one more argument, like in node");
-    }
-  });
-})();

@@ -703,13 +703,20 @@ function callbackify(original) {
     // In true node style we process the callback on `nextTick` with all the
     // implications (stack, `uncaughtException`, `async_hooks`)
     original.apply(this, args)
-      .then(function(ret) { process.nextTick(cb.bind(null, null, ret)) },
-            function(rej) { process.nextTick(callbackifyOnRejected.bind(null, rej, cb)) });
+      .then(function (ret) { process.nextTick(cb.bind(null, null, ret)) },
+        function (rej) { process.nextTick(callbackifyOnRejected.bind(null, rej, cb)) });
   }
 
   Object.setPrototypeOf(callbackified, Object.getPrototypeOf(original));
   const desc = getOwnPropertyDescriptors(original);
-  desc.length.value += 1;
+  var isFunctionLengthConfigurable = Object.getOwnPropertyDescriptor(callbackified, 'length').configurable;
+
+  // versions of NodeJS <12.0 have a bug where the callback's `length` is not adjusted as in recent NodeJS version
+  // even though functionLength is configurable.
+  if (isFunctionLengthConfigurable) {
+    desc.length.value += 1;
+  }
+
   Object.defineProperties(callbackified, desc);
   return callbackified;
 }
