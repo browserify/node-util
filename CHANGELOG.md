@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.12.5
+* Move `safe-buffer` dependency to a dev-only dependency. ([@goto-bus-stop](https://github.com/goto-bus-stop) in [e84cfd5](https://github.com/browserify/node-util/commit/e84cfd5e4923631d012e578d7aa140412a475646))
+* Document usage with webpack 5+. ([@MatrixFrog](https://github.com/MatrixFrog) in [#69](https://github.com/browserify/node-util/pull/69))
+
 ## 0.12.4
 * Avoid SharedArrayBuffer until required. ([@snyamathi](https://github.com/snyamathi) in [#59](https://github.com/browserify/node-util/pull/59))
 
