@@ -3,6 +3,8 @@
 var test = require('tape');
 var callbackify = require('../../').callbackify;
 
+var isFunctionLengthConfigurable = require('../../support/isFunctionLengthConfigurable');
+
 if (typeof Promise === 'undefined') {
   console.log('no global Promise found, skipping callbackify tests');
   return;
@@ -167,3 +169,23 @@ test('util.callbackify non-function inputs throw', function (t) {
   });
   t.end();
 });
+
+test('util.callbackify resulting function should have one more argument', function (t) {
+
+  if (!isFunctionLengthConfigurable()) {
+    console.log("skipping this test as function.length is not configurable in the current javascript engine");
+    return;
+  }
+  // Test that resulting function should have one more argument
+  [
+    function() { },
+    function(a) { },
+    function(a, b) { }
+  ].forEach(function (fct) {
+
+    var callbackified = callbackify(fct);
+    t.strictEqual(callbackified.length, fct.length + 1, "callbackified function should have one more argument");
+  });
+  t.end();
+});
+
