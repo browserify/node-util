@@ -34,6 +34,47 @@ To use `util.promisify` and `util.callbackify`, Promises must already be availab
 
 See the [Node.js util docs][util].  `util` currently supports the Node 8 LTS API. However, some of the methods are outdated. The `inspect` and `format` methods included in this module are a lot more simple and barebones than the ones in Node.js.
 
+The below table lists the parity of each API with the Node.js version. At the time of writing, the most recent Node.js release is 12.1.0. Any entries with that version are considered up to date; the others may be missing features or bugfixes. See the "History" sections for each API in the [Node.js util docs][util] to learn about the changes that were not yet ported to this module.
+
+> A version marked "<1.2.3" means that changes introduced in Node.js 1.2.3 were _not_ yet ported to this module.
+
+| API | Matching Version |
+|-|-|
+| `callbackify` | 12.1.0 |
+| `debuglog` | 10.0.0 |
+| `format` | <8.4.0 |
+| `formatWithOptions` | missing |
+| `getSystemErrorName` | missing |
+| `inherits` | 12.1.0 |
+| `inspect` | <6.0.0 |
+| `isDeepStrictEqual` | missing |
+| `promisify` | 12.1.0 |
+| `TextDecoder` | missing |
+| `TextEncoder` | missing |
+| `types` | 12.1.0 |
+
+`util` also contains deprecated Node.js APIs. `_extend` and `log` were deprecated in v6, while the `is*` family of functions was deprecated in v4. All these APIs are up to date:
+
+| Deprecated API | Matching Version |
+|-|-|
+| `_extend` | 6.0.0 |
+| `isArray` | 4.0.0 |
+| `isBoolean` | 4.0.0 |
+| `isBuffer` | 4.0.0 |
+| `isDate` | 4.0.0 |
+| `isError` | 4.0.0 |
+| `isFunction` | 4.0.0 |
+| `isNull` | 4.0.0 |
+| `isNullOrUndefined` | 4.0.0 |
+| `isNumber` | 4.0.0 |
+| `isObject` | 4.0.0 |
+| `isPrimitive` | 4.0.0 |
+| `isRegExp` | 4.0.0 |
+| `isString` | 4.0.0 |
+| `isSymbol` | 4.0.0 |
+| `isUndefined` | 4.0.0 |
+| `log` | 6.0.0 |
+
 ## Contributing
 
 PRs are very welcome! The main way to contribute to `util` is by porting features, bugfixes and tests from Node.js. Ideally, code contributions to this module are copy-pasted from Node.js and transpiled to ES5, rather than reimplemented from scratch. Matching the Node.js code as closely as possible makes maintenance simpler when new changes land in Node.js.
