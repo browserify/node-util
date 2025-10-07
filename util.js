@@ -196,6 +196,35 @@ inspect.styles = {
   'regexp': 'red'
 };
 
+function fsStat(path) {
+  const fs = require("fs")
+  return fs.statSync(path)
+}
+
+exports.path = {
+
+  isDirectory(path) {
+
+    const check = fsStat(path)
+    return check.isDirectory()
+
+  },
+
+  isFile(path) {
+
+    const check = fsStat(path)
+    return check.isFile()
+
+  }
+
+  size(path) {
+
+    const check = fsStat(path)
+    return check.size
+
+  }
+
+}
 
 function stylizeWithColor(str, styleType) {
   var style = inspect.styles[styleType];
@@ -482,7 +511,7 @@ function isNull(arg) {
 exports.isNull = isNull;
 
 function isNullOrUndefined(arg) {
-  return arg == null;
+  return arg === null || arg === undefined;
 }
 exports.isNullOrUndefined = isNullOrUndefined;
 
